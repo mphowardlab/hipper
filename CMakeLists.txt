@@ -10,7 +10,6 @@ set(CMAKE_CXX_STANDARD 11)
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
 
 # check if hipper is being used directly or via add_subdirectory
-# this sets the default options for whether headers, tests, and benchmarks should be used
 set(HIPPER_MASTER_PROJECT OFF)
 if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
     set(HIPPER_MASTER_PROJECT ON)

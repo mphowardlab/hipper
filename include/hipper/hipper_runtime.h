@@ -215,9 +215,9 @@ typedef hipDeviceProp_t deviceProp_t;
 
 // funcCache_t
 #if defined(HIPPER_CUDA)
-typedef cudaFuncCache funcCache_t
+typedef cudaFuncCache funcCache_t;
 #elif defined(HIPPER_HIP)
-typedef hipFuncCache_t funcCache_t
+typedef hipFuncCache_t funcCache_t;
 #endif
 enum funcCache
     {

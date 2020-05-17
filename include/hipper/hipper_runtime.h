@@ -759,7 +759,7 @@ inline error_t memcpyFromSymbol(void* dst,
                                 size_t offset = 0,
                                 memcpyKind kind = memcpyDeviceToHost)
     {
-    return HIPPER(MemcpyFromSymbol)(dst, symbol, count, offset, kind);
+    return HIPPER(MemcpyFromSymbol)(dst, symbol, count, offset, castMemcpyKind(kind));
     }
 
 //! Copies data from the given symbol on the device asynchronously.
@@ -770,7 +770,7 @@ inline error_t memcpyFromSymbolAsync(void* dst,
                                      memcpyKind kind = memcpyDeviceToHost,
                                      stream_t stream = 0)
     {
-    return HIPPER(MemcpyFromSymbolAsync)(dst, symbol, count, offset, kind, stream);
+    return HIPPER(MemcpyFromSymbolAsync)(dst, symbol, count, offset, castMemcpyKind(kind), stream);
     }
 
 //! Copies memory between two devices.
@@ -792,7 +792,7 @@ inline error_t memcpyToSymbol(const void* symbol,
                               size_t offset = 0,
                               memcpyKind kind = memcpyHostToDevice)
     {
-    return HIPPER(MemcpyToSymbol)(symbol, src, count, offset, kind);
+    return HIPPER(MemcpyToSymbol)(symbol, src, count, offset, castMemcpyKind(kind));
     }
 
 //! Copies data to the given symbol on the device asynchronously.
@@ -803,7 +803,7 @@ inline error_t memcpyToSymbolAsync(const void* symbol,
                                    memcpyKind kind = memcpyHostToDevice,
                                    stream_t stream = 0)
     {
-    return HIPPER(MemcpyToSymbolAsync)(symbol, src, count, offset, kind, stream);
+    return HIPPER(MemcpyToSymbolAsync)(symbol, src, count, offset, castMemcpyKind(kind), stream);
     }
 
 //! Initializes or sets device memory to a value.

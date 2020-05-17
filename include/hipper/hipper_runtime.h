@@ -363,7 +363,7 @@ inline error_t deviceGetByPCIBusId(int* device, const char* pciBusId)
     }
 
 //! Returns the preferred cache configuration for the current device.
-inline error_t deviceGetCacheConfig(funcCache_t** cacheConfig)
+inline error_t deviceGetCacheConfig(funcCache_t* cacheConfig)
     {
     return HIPPER(DeviceGetCacheConfig)(cacheConfig);
     }
@@ -381,7 +381,7 @@ inline error_t deviceGetPCIBusId(char* pciBusId, int len, int device)
     }
 
 //! Returns the shared memory configuration for the current device.
-inline error_t deviceGetSharedMemConfig(sharedMemConfig_t** config)
+inline error_t deviceGetSharedMemConfig(sharedMemConfig_t* config)
     {
     return HIPPER(DeviceGetSharedMemConfig)(config);
     }
@@ -850,7 +850,7 @@ inline error_t funcGetAttributes(funcAttributes_t* attr, const void* func)
     }
 
 //! Sets the preferred cache configuration for a device function.
-inline error_t funcSetCacheConfig(const void* func, funcCache_t cacheConfig)
+inline error_t funcSetCacheConfig(const void* func, funcCache cacheConfig)
     {
     return HIPPER(FuncSetCacheConfig)(func, castFuncCache(cacheConfig));
     }

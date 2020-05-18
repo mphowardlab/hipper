@@ -62,7 +62,6 @@ namespace hipper
  * @{
  */
 typedef HIPPER(Error_t) error_t;
-
 enum error
     {
     success = HIPPER(Success),
@@ -159,7 +158,6 @@ enum error
     errorNotSupported = HIPPER(ErrorNotSupported),
     errorUnknown = HIPPER(ErrorUnknown)
     };
-
 //! Coerce equal comparison of hipper::error with the native error as int.
 inline bool operator==(error a, error_t b)
     {
@@ -169,7 +167,6 @@ inline bool operator==(error_t a, error b)
     {
     return (b == a);
     }
-
 //! Coerce not-equal comparison of hipper::error with the native error as int
 inline bool operator!=(error a, error_t b)
     {
@@ -209,26 +206,29 @@ inline error_t peekAtLastError(void)
  * \defgroup devices Device Management
  * @{
  */
+// deviceProp_t
 #if defined(HIPPER_CUDA)
 typedef cudaDeviceProp deviceProp_t;
-typedef cudaFuncCache funcCache;
-typedef cudaLimit limit;
 #elif defined(HIPPER_HIP)
 typedef hipDeviceProp_t deviceProp_t;
-typedef hipFuncCache_t funcCache;
-typedef hipLimit_t limit;
 #endif
-typedef HIPPER(SharedMemConfig) sharedMemConfig;
-enum funcCache_t
+
+// funcCache_t
+#if defined(HIPPER_CUDA)
+typedef cudaFuncCache funcCache_t;
+#elif defined(HIPPER_HIP)
+typedef hipFuncCache_t funcCache_t;
+#endif
+enum funcCache
     {
     funcCachePreferNone = HIPPER(FuncCachePreferNone),
     funcCachePreferShared = HIPPER(FuncCachePreferShared),
     funcCachePreferL1 = HIPPER(FuncCachePreferL1),
     funcCachePreferEqual = HIPPER(FuncCachePreferEqual)
     };
-inline funcCache castFuncCache(funcCache_t cacheConfig)
+inline funcCache_t castFuncCache(funcCache cacheConfig)
     {
-    funcCache result;
+    funcCache_t result;
     switch(cacheConfig)
         {
         case funcCachePreferNone:
@@ -246,13 +246,36 @@ inline funcCache castFuncCache(funcCache_t cacheConfig)
         }
     return result;
     }
-enum limit_t
+inline bool operator==(funcCache a, funcCache_t b)
+    {
+    return (static_cast<int>(a) == static_cast<int>(b));
+    }
+inline bool operator==(funcCache_t a, funcCache b)
+    {
+    return (b == a);
+    }
+inline bool operator!=(funcCache a, funcCache_t b)
+    {
+    return (static_cast<int>(a) != static_cast<int>(b));
+    }
+inline bool operator!=(funcCache_t a, funcCache b)
+    {
+    return (b != a);
+    }
+
+// limit_t
+#if defined(HIPPER_CUDA)
+typedef cudaLimit limit_t;
+#elif defined(HIPPER_HIP)
+typedef hipLimit_t limit;
+#endif
+enum limit
     {
     limitMallocHeapSize = HIPPER(LimitMallocHeapSize)
     };
-inline limit castLimit(limit_t lim)
+inline limit_t castLimit(limit lim)
     {
-    limit result;
+    limit_t result;
     switch(lim)
         {
         case limitMallocHeapSize:
@@ -261,15 +284,34 @@ inline limit castLimit(limit_t lim)
         }
     return result;
     }
-enum sharedMemConfig_t
+inline bool operator==(limit a, limit_t b)
+    {
+    return (static_cast<int>(a) == static_cast<int>(b));
+    }
+inline bool operator==(limit_t a, limit b)
+    {
+    return (b == a);
+    }
+inline bool operator!=(limit a, limit_t b)
+    {
+    return (static_cast<int>(a) != static_cast<int>(b));
+    }
+inline bool operator!=(limit_t a, limit b)
+    {
+    return (b != a);
+    }
+
+// sharedMemConfig_t
+typedef HIPPER(SharedMemConfig) sharedMemConfig_t;
+enum sharedMemConfig
     {
     sharedMemBankSizeDefault = HIPPER(SharedMemBankSizeDefault),
     sharedMemBankSizeFourByte = HIPPER(SharedMemBankSizeFourByte),
     sharedMemBankSizeEightByte = HIPPER(SharedMemBankSizeEightByte)
     };
-inline sharedMemConfig castSharedMemConfig(sharedMemConfig_t config)
+inline sharedMemConfig_t castSharedMemConfig(sharedMemConfig config)
     {
-    sharedMemConfig result;
+    sharedMemConfig_t result;
     switch(config)
         {
         case sharedMemBankSizeFourByte:
@@ -283,12 +325,30 @@ inline sharedMemConfig castSharedMemConfig(sharedMemConfig_t config)
         }
     return result;
     }
+inline bool operator==(sharedMemConfig a, sharedMemConfig_t b)
+    {
+    return (static_cast<int>(a) == static_cast<int>(b));
+    }
+inline bool operator==(sharedMemConfig_t a, sharedMemConfig b)
+    {
+    return (b == a);
+    }
+inline bool operator!=(sharedMemConfig a, sharedMemConfig_t b)
+    {
+    return (static_cast<int>(a) != static_cast<int>(b));
+    }
+inline bool operator!=(sharedMemConfig_t a, sharedMemConfig b)
+    {
+    return (b != a);
+    }
+
 static const int deviceScheduleAuto = HIPPER(DeviceScheduleAuto);
+static const int deviceScheduleBlockingSync = HIPPER(DeviceScheduleBlockingSync);
+static const int deviceScheduleMask = HIPPER(DeviceScheduleMask);
 static const int deviceScheduleSpin = HIPPER(DeviceScheduleSpin);
 static const int deviceScheduleYield = HIPPER(DeviceScheduleYield);
-static const int deviceScheduleBlockingSync = HIPPER(DeviceScheduleBlockingSync);
-static const int deviceMapHost = HIPPER(DeviceMapHost);
 static const int deviceLmemReizeToMax = HIPPER(DeviceLmemResizeToMax);
+static const int deviceMapHost = HIPPER(DeviceMapHost);
 
 //! Select compute-device which best matches criteria.
 inline error_t chooseDevice(int* device, deviceProp_t* prop)
@@ -302,8 +362,14 @@ inline error_t deviceGetByPCIBusId(int* device, const char* pciBusId)
     return HIPPER(DeviceGetByPCIBusId)(device,pciBusId);
     }
 
+//! Returns the preferred cache configuration for the current device.
+inline error_t deviceGetCacheConfig(funcCache_t* cacheConfig)
+    {
+    return HIPPER(DeviceGetCacheConfig)(cacheConfig);
+    }
+
 //! Returns resource limits.
-inline error_t deviceGetLimit(size_t* value, limit_t lim)
+inline error_t deviceGetLimit(size_t* value, limit lim)
     {
     return HIPPER(DeviceGetLimit)(value, castLimit(lim));
     }
@@ -312,6 +378,12 @@ inline error_t deviceGetLimit(size_t* value, limit_t lim)
 inline error_t deviceGetPCIBusId(char* pciBusId, int len, int device)
     {
     return HIPPER(DeviceGetPCIBusId)(pciBusId, len, device);
+    }
+
+//! Returns the shared memory configuration for the current device.
+inline error_t deviceGetSharedMemConfig(sharedMemConfig_t* config)
+    {
+    return HIPPER(DeviceGetSharedMemConfig)(config);
     }
 
 //! Returns numerical values that correspond to the least and greatest stream priorities.
@@ -327,21 +399,21 @@ inline error_t deviceReset(void)
     }
 
 //! Sets the preferred cache configuration for the current device.
-inline error_t deviceSetCacheConfig(funcCache_t cacheConfig)
+inline error_t deviceSetCacheConfig(funcCache cacheConfig)
     {
     return HIPPER(DeviceSetCacheConfig)(castFuncCache(cacheConfig));
     }
 
 #if 0 // not currently supported in HIP, although it is supposed to be
 //! Set resource limits.
-inline error_t deviceSetLimit(limit_t lim, size_t value)
+inline error_t deviceSetLimit(limit lim, size_t value)
     {
     return HIPPER(DeviceSetLimit)(castLimit(lim), value);
     }
 #endif
 
 //! Sets the shared memory configuration for the current device.
-inline error_t deviceSetSharedMemConfig(sharedMemConfig_t config)
+inline error_t deviceSetSharedMemConfig(sharedMemConfig config)
     {
     return HIPPER(DeviceSetSharedMemConfig)(castSharedMemConfig(config));
     }
@@ -401,9 +473,16 @@ inline error_t setDeviceFlags(unsigned int flags)
  */
 typedef HIPPER(Stream_t) stream_t;
 typedef HIPPER(Event_t) event_t;
+typedef void (*streamCallback_t)(stream_t stream, error_t status, void* userData);
 
 static const int streamDefault = HIPPER(StreamDefault);
 static const int streamNonBlocking = HIPPER(StreamNonBlocking);
+
+//! Add a callback to a compute stream.
+inline error_t streamAddCallback(stream_t stream, streamCallback_t callback, void* userData, unsigned int flags)
+    {
+    return HIPPER(StreamAddCallback)(stream, callback, userData, flags);
+    }
 
 //! Create an asynchronous stream.
 inline error_t streamCreate(stream_t* stream)
@@ -417,10 +496,28 @@ inline error_t streamCreateWithFlags(stream_t* stream, unsigned int flags)
     return HIPPER(StreamCreateWithFlags)(stream, flags);
     }
 
+//! Create an asynchronous stream with the specified priority.
+inline error_t streamCreateWithPriority(stream_t* stream, unsigned int flags, int priority)
+    {
+    return HIPPER(StreamCreateWithPriority)(stream, flags, priority);
+    }
+
 //! Destroys and cleans up an asynchronous stream.
 inline error_t streamDestroy(stream_t stream)
     {
     return HIPPER(StreamDestroy)(stream);
+    }
+
+//! Query the flags of a stream.
+inline error_t streamGetFlags(stream_t stream, unsigned int* flags)
+    {
+    return HIPPER(StreamGetFlags)(stream, flags);
+    }
+
+//! Query the priority of a stream.
+inline error_t streamGetPriority(stream_t stream, int* priority)
+    {
+    return HIPPER(StreamGetPriority)(stream, priority);
     }
 
 //! Queries an asynchronous stream for completion status.
@@ -498,6 +595,52 @@ inline error_t eventSynchronize(event_t event)
  * \defgroup memory Memory Management
  * @{
  */
+// memcpyKind_t
+typedef HIPPER(MemcpyKind) memcpyKind_t;
+enum memcpyKind
+    {
+    memcpyHostToHost = HIPPER(MemcpyHostToHost),
+    memcpyHostToDevice = HIPPER(MemcpyHostToDevice),
+    memcpyDeviceToHost = HIPPER(MemcpyDeviceToHost),
+    memcpyDeviceToDevice = HIPPER(MemcpyDeviceToDevice),
+    memcpyDefault = HIPPER(MemcpyDefault)
+    };
+inline memcpyKind_t castMemcpyKind(memcpyKind kind)
+    {
+    memcpyKind_t result;
+    switch(kind)
+        {
+        case memcpyHostToHost:
+            result = HIPPER(MemcpyHostToHost);
+            break;
+        case memcpyHostToDevice:
+            result = HIPPER(MemcpyHostToDevice);
+            break;
+        case memcpyDeviceToHost:
+            result = HIPPER(MemcpyDeviceToHost);
+            break;
+        default:
+            result = HIPPER(MemcpyDefault);
+        }
+    return result;
+    }
+inline bool operator==(memcpyKind a, memcpyKind_t b)
+    {
+    return (static_cast<int>(a) == static_cast<int>(b));
+    }
+inline bool operator==(memcpyKind_t a, memcpyKind b)
+    {
+    return (b == a);
+    }
+inline bool operator!=(memcpyKind a, memcpyKind_t b)
+    {
+    return (static_cast<int>(a) != static_cast<int>(b));
+    }
+inline bool operator!=(memcpyKind_t a, memcpyKind b)
+    {
+    return (b != a);
+    }
+
 #if defined(HIPPER_CUDA)
 static const int hostMallocDefault = cudaHostAllocDefault;
 static const int hostMallocMapped = cudaHostAllocMapped;
@@ -517,39 +660,22 @@ static const int hostRegisterPortable = HIPPER(HostRegisterPortable);
 static const int memAttachGlobal = HIPPER(MemAttachGlobal);
 static const int memAttachHost = HIPPER(MemAttachHost);
 
-typedef HIPPER(MemcpyKind) memcpyKind;
-enum memcpyKind_t
-    {
-    memcpyHostToHost = HIPPER(MemcpyHostToHost),
-    memcpyHostToDevice = HIPPER(MemcpyHostToDevice),
-    memcpyDeviceToHost = HIPPER(MemcpyDeviceToHost),
-    memcpyDeviceToDevice = HIPPER(MemcpyDeviceToDevice),
-    memcpyDefault = HIPPER(MemcpyDefault)
-    };
-inline memcpyKind castMemcpyKind(memcpyKind_t kind)
-    {
-    memcpyKind result;
-    switch(kind)
-        {
-        case memcpyHostToHost:
-            result = HIPPER(MemcpyHostToHost);
-            break;
-        case memcpyHostToDevice:
-            result = HIPPER(MemcpyHostToDevice);
-            break;
-        case memcpyDeviceToHost:
-            result = HIPPER(MemcpyDeviceToHost);
-            break;
-        default:
-            result = HIPPER(MemcpyDefault);
-        }
-    return result;
-    }
-
 //! Frees memory on the device.
 inline error_t free(void* ptr)
     {
     return HIPPER(Free)(ptr);
+    }
+
+//! Finds the address associated with a CUDA symbol.
+inline error_t getSymbolAddress(void** devPtr, const void* symbol)
+    {
+    return HIPPER(GetSymbolAddress)(devPtr, symbol);
+    }
+
+//! Finds the size of the object associated with a CUDA symbol.
+inline error_t getSymbolSize(size_t* size, const void* symbol)
+    {
+    return HIPPER(GetSymbolSize)(size, symbol);
     }
 
 //! Frees page-locked memory.
@@ -562,10 +688,26 @@ inline error_t hostFree(void* ptr)
     #endif
     }
 
-//! Passes back device pointer of mapped host memory, which is registered in hostRegister.
-inline error_t hostGetDevicePointer(void** pDevice, void* pHost, unsigned int flags)
+//! Allocates page-locked memory on the host.
+inline error_t hostMalloc(void** host, size_t size, unsigned int flags)
     {
-    return HIPPER(HostGetDevicePointer)(pDevice, pHost, flags);
+    #if defined(HIPPER_CUDA)
+    return cudaHostAlloc(host, size, flags);
+    #elif defined(HIPPER_HIP)
+    return hipHostMalloc(host, size, flags);
+    #endif
+    }
+
+//! Passes back device pointer of mapped host memory, which is registered in hostRegister.
+inline error_t hostGetDevicePointer(void** device, void* host, unsigned int flags)
+    {
+    return HIPPER(HostGetDevicePointer)(device, host, flags);
+    }
+
+//! Passes back flags used to allocate pinned host memory allocated by hostAlloc.
+inline error_t hostGetFlags(unsigned int* flags, void* host)
+    {
+    return HIPPER(HostGetFlags)(flags, host);
     }
 
 //! Registers an existing host memory range for use by CUDA.
@@ -592,16 +734,76 @@ inline error_t mallocManaged(void** ptr, size_t size, unsigned int flags = memAt
     return HIPPER(MallocManaged)(ptr, size, flags);
     }
 
+//! Gets free and total device memory.
+inline error_t memGetInfo(size_t* free, size_t* total)
+    {
+    return HIPPER(MemGetInfo)(free, total);
+    }
+
 //! Copies data between host and device
-inline error_t memcpy(void* dst, const void* src, size_t count, memcpyKind_t kind)
+inline error_t memcpy(void* dst, const void* src, size_t count, memcpyKind kind)
     {
     return HIPPER(Memcpy)(dst, src, count, castMemcpyKind(kind));
     }
 
 //! Asynchronously copies memory between host and device
-inline error_t memcpyAsync(void* dst, const void* src, size_t count, memcpyKind_t kind, stream_t stream = 0)
+inline error_t memcpyAsync(void* dst, const void* src, size_t count, memcpyKind kind, stream_t stream = 0)
     {
     return HIPPER(MemcpyAsync)(dst, src, count, castMemcpyKind(kind), stream);
+    }
+
+//! Copies data from the given symbol on the device.
+inline error_t memcpyFromSymbol(void* dst,
+                                const void* symbol,
+                                size_t count,
+                                size_t offset = 0,
+                                memcpyKind kind = memcpyDeviceToHost)
+    {
+    return HIPPER(MemcpyFromSymbol)(dst, symbol, count, offset, castMemcpyKind(kind));
+    }
+
+//! Copies data from the given symbol on the device asynchronously.
+inline error_t memcpyFromSymbolAsync(void* dst,
+                                     const void* symbol,
+                                     size_t count,
+                                     size_t offset = 0,
+                                     memcpyKind kind = memcpyDeviceToHost,
+                                     stream_t stream = 0)
+    {
+    return HIPPER(MemcpyFromSymbolAsync)(dst, symbol, count, offset, castMemcpyKind(kind), stream);
+    }
+
+//! Copies memory between two devices.
+inline error_t memcpyPeer(void* dst, int dstDevice, const void* src, int srcDevice, size_t count)
+    {
+    return HIPPER(MemcpyPeer)(dst, dstDevice, src, srcDevice, count);
+    }
+
+//! Copies memory between two devices asynchronously.
+inline error_t memcpyPeerAsync(void* dst, int dstDevice, const void* src, int srcDevice, size_t count, stream_t stream = 0)
+    {
+    return HIPPER(MemcpyPeerAsync)(dst, dstDevice, src, srcDevice, count, stream);
+    }
+
+//! Copies data to the given symbol on the device.
+inline error_t memcpyToSymbol(const void* symbol,
+                              const void* src,
+                              size_t count,
+                              size_t offset = 0,
+                              memcpyKind kind = memcpyHostToDevice)
+    {
+    return HIPPER(MemcpyToSymbol)(symbol, src, count, offset, castMemcpyKind(kind));
+    }
+
+//! Copies data to the given symbol on the device asynchronously.
+inline error_t memcpyToSymbolAsync(const void* symbol,
+                                   const void* src,
+                                   size_t count,
+                                   size_t offset = 0,
+                                   memcpyKind kind = memcpyHostToDevice,
+                                   stream_t stream = 0)
+    {
+    return HIPPER(MemcpyToSymbolAsync)(symbol, src, count, offset, castMemcpyKind(kind), stream);
     }
 
 //! Initializes or sets device memory to a value.
@@ -648,7 +850,7 @@ inline error_t funcGetAttributes(funcAttributes_t* attr, const void* func)
     }
 
 //! Sets the preferred cache configuration for a device function.
-inline error_t funcSetCacheConfig(const void* func, funcCache_t cacheConfig)
+inline error_t funcSetCacheConfig(const void* func, funcCache cacheConfig)
     {
     return HIPPER(FuncSetCacheConfig)(func, castFuncCache(cacheConfig));
     }

@@ -9,18 +9,18 @@
 | `cudaChooseDevice`                    | `hipChooseDevice`                 | `hipper::chooseDevice`                |
 | `cudaDeviceGetAttribute`              | `hipDeviceGetAttribute`           |                                       |
 | `cudaDeviceGetByPCIBusId`             | `hipDeviceGetByPCIBusId`          | `hipper::deviceGetByPCIBusId`         |
-| `cudaDeviceGetCacheConfig`            | `hipDeviceGetCacheConfig`         |                                       |
+| `cudaDeviceGetCacheConfig`            | `hipDeviceGetCacheConfig`         | `hipper::deviceGetCacheConfig`        |
 | `cudaDeviceGetLimit`                  | `hipDeviceGetLimit`               | `hipper::deviceGetLimit`              |
 | `cudaDeviceGetNvSciSyncAttributes`    |                                   |                                       |
 | `cudaDeviceGetP2PAttribute`           |                                   |                                       |
 | `cudaDeviceGetPCIBusId`               | `hipDeviceGetPCIBusId`            | `hipper:deviceGetPCIBusId`            |
-| `cudaDeviceGetSharedMemConfig`        | `hipDeviceGetSharedMemConfig`     |                                       |
+| `cudaDeviceGetSharedMemConfig`        | `hipDeviceGetSharedMemConfig`     | `hipper:deviceGetSharedMemConfig`     |
 | `cudaDeviceGetStreamPriorityRange`    | `hipDeviceGetStreamPriorityRange` | `hipper::deviceGetStreamPriorityRange`|
 | `cudaDeviceReset`                     | `hipDeviceReset`                  | `hipper::deviceReset`                 |
 | `cudaDeviceSetCacheConfig`            | `hipDeviceSetCacheConfig`         | `hipper::deviceSetCacheConfig`        |
 | `cudaDeviceSetLimit`                  | `hipDeviceSetLimit`               | Not actually supported by HIP.        |
 | `cudaDeviceSetSharedMemConfig`        | `hipDeviceSetSharedMemConfig`     | `hipper::deviceSetSharedMemConfig`    |
-| `cudaDeviceSynchronize`               | `hipDeviceSynchronize`            | `hipper::deviceSynchronize            |
+| `cudaDeviceSynchronize`               | `hipDeviceSynchronize`            | `hipper::deviceSynchronize`           |
 | `cudaGetDevice`                       | `hipGetDevice`                    | `hipper::getDevice`                   |
 | `cudaGetDeviceCount`                  | `hipGetDeviceCount`               | `hipper::getDeviceCount`              |
 | `cudaGetDeviceFlags`                  | `hipCtxGetFlags`                  | `hipper::getDeviceFlags`\*            |
@@ -36,8 +36,10 @@
 
 ### Function Cache Configuration
 
-| `cudaFuncCache`                       | `hipFuncCache_t`                  | `hipper::funcCache_t`                 |
+|   **CUDA**                            |   **HIP**                         |   **hipper**                          |
 |---------------------------------------|-----------------------------------|---------------------------------------|
+| `cudaFuncCache`                       | `hipFuncCache_t`                  | `hipper::funcCache_t`                 |
+|                                       |                                   |                                       |
 | `cudaFuncCachePreferNone`             | `hipFuncCachePreferNone`          | `hipper::funcCachePreferNone`         |
 | `cudaFuncCachePreferShared`           | `hipFuncCachePreferShared`        | `hipper::funcCachePreferShared`       |
 | `cudaFuncCachePreferL1`               | `hipFuncCachePreferL1`            | `hipper::funcCachePreferL1`           |
@@ -45,8 +47,10 @@
 
 ### Limits
 
-| `cudaLimit`                           | `hipLimit_t`                      | `hipper::limit_t`                     |
+|   **CUDA**                            |   **HIP**                         |   **hipper**                          |
 |---------------------------------------|-----------------------------------|---------------------------------------|
+| `cudaLimit`                           | `hipLimit_t`                      | `hipper::limit_t`                     |
+|                                       |                                   |                                       |
 | `cudaLimitStackSize`                  |                                   |                                       |
 | `cudaLimitPrintfFifoSize`             |                                   |                                       |
 | `cudaLimitMallocHeapSize`             | `hipLimitMallocHeapSize`          | `hipper::limitMallocHeapSize`         |
@@ -56,8 +60,10 @@
 
 ### Shared Memory Configuration
 
-| `cudaLimit`                           | `hipLimit_t`                      | `hipper::limit_t`                     |
+|   **CUDA**                            |   **HIP**                         |   **hipper**                          |
 |---------------------------------------|-----------------------------------|---------------------------------------|
+| `cudaSharedMemConfig`                 | `hipSharedMemConfig_t`            | `hipper::sharedMemConfig_t`           |
+|                                       |                                   |                                       |
 | `cudaSharedMemBankSizeDefault`        | `hipSharedMemBankSizeDefault`     | `hipper::sharedMemBankSizeDefault`    |
 | `cudaSharedMemBankSizeFourByte`       | `hipSharedMemBankSizeFourByte`    | `hipper::sharedMemBankSizeFourByte`   |
 | `cudaSharedMemBankSizeEightByte`      | `hipSharedMemBankSizeEightByte`   | `hipper::sharedMemBankSizeEightByte`  |
@@ -68,7 +74,7 @@
 |---------------------------------------|-----------------------------------|---------------------------------------|
 | `cudaDeviceScheduleAuto`              | `hipDeviceScheduleAuto`           | `hipper::deviceScheduleAuto`          |
 | `cudaDeviceScheduleBlockingSync`      | `hipDeviceScheduleBlockingSync`   | `hipper::deviceScheduleBlockingSync`  |
-| `cudaDeviceScheduleMask`              | `hipDeviceScheduleMask`           |                                       |
+| `cudaDeviceScheduleMask`              | `hipDeviceScheduleMask`           | `hipper::deviceScheduleMask`          |
 | `cudaDeviceScheduleSpin`              | `hipDeviceScheduleSpin`           | `hipper::deviceScheduleSpin`          |
 | `cudaDeviceScheduleYield`             | `hipDeviceScheduleYield`          | `hipper::deviceScheduleYield`         |
 | `cudaDeviceLmemResizeToMax`           | `hipDeviceLmemResizeToMax`        | `hipper::deviceLmemResizeToMax`       |
@@ -85,8 +91,10 @@
 
 ### Error Codes
 
-| `cudaError_t`                             | `hipError_t`                          | `hipper::error_t`                         |
+|   **CUDA**                                |   **HIP**                             |   **hipper**                              |
 |-------------------------------------------|---------------------------------------|-------------------------------------------|
+| `cudaError_t`                             | `hipError_t`                          | `hipper::error_t`                         |
+|                                           |                                       |                                           |
 | `cudaSuccess`                             | `hipSuccess`                          | `hippe::success`                          |
 | `cudaErrorInvalidValue`                   | `hipErrorInvalidValue`                | `hipper::errorInvalidValue`               |
 | `cudaErrorMemoryAllocation`               | `hipErrorOutOfMemory`                 | `hipper::errorOutOfMemory`                |
@@ -133,7 +141,7 @@
 | `cudaErrorInvalidDevice`                  | `hipErrorInvalidDevice`               | `hipper::errorInvalidDevice`              |
 | `cudaErrorStartupFailure`                 |                                       |                                           |
 | `cudaErrorInvalidKernelImage`             | `hipErrorInvalidImage`                | `hipper::errorInvalidImage`               |
-| `cudaErrorDeviceUninitialized`            | `hipErrorInvalidContext`              |                                           |
+| `cudaErrorDeviceUninitialized`            | `hipErrorInvalidContext`              | Not currently supported (CUDA 10.1).      |
 | `cudaErrorMapBufferObjectFailed`          | `hipErrorMapFailed`                   | `hipper::errorMapFailed`                  |
 | `cudaErrorUnmapBufferObjectFailed`        | `hipErrorUnmapFailed`                 | `hipper::errorUnmapFailed`                |
 | `cudaErrorNoKernelImageForDevice`         | `hipErrorNoBinaryForGpu`              | `hipper::errorNoBinaryForGPU`             |
@@ -145,14 +153,14 @@
 | `cudaErrorInvalidGraphicsContext`         | `hipErrorInvalidGraphicsContext`      | `hippper::errorInvalidGraphicsContext`    |
 | `cudaErrorNvlinkUncorrectable`            |                                       |                                           |
 | `cudaErrorJitCompilerNotFound`            |                                       |                                           |
-| `cudaErrorInvalidSource`                  | `hipErrorInvalidSource`               |                                           |
-| `cudaErrorFileNotFound`                   | `hipErrorFileNotFound`                |                                           |
+| `cudaErrorInvalidSource`                  | `hipErrorInvalidSource`               | Not currently supported (CUDA 10.1).      |
+| `cudaErrorFileNotFound`                   | `hipErrorFileNotFound`                | Not currently supported (CUDA 10.1).      |
 | `cudaErrorSharedObjectSymbolNotFound`     | `hipErrorSharedObjectSymbolNotFound`  | `hipper::errorSharedObjectSymbolNotFound` |
 | `cudaErrorSharedObjectInitFailed`         | `hipErrorSharedObjectInitFailed`      | `hipper::errorSharedObjectInitFailed`     |
 | `cudaErrorOperatingSystem`                | `hipErrorOperatingSystem`             | `hipper::errorOperatingSystem`            |
 | `cudaErrorInvalidResourceHandle`          | `hipErrorInvalidHandle`               | `hipper::errorInvalidHandle`              |
 | `cudaErrorIllegalState`                   |                                       |                                           |
-| `cudaErrorSymbolNotFound`                 | `hipErrorNotFound`                    |                                           |
+| `cudaErrorSymbolNotFound`                 | `hipErrorNotFound`                    | Not currently supported (CUDA 10.1).      |
 | `cudaErrorNotReady`                       | `hipErrorNotReady`                    | `hipper::errorNotReady`                   |
 | `cudaErrorIllegalAddress`                 | `hipErrorIllegalAddress`              | `hipper::errorIllegalAddress`             |
 | `cudaErrorLaunchOutOfResources`           | `hipErrorLaunchOutOfResources`        | `hipper::errorLaunchOutOfResources`       |
@@ -172,7 +180,7 @@
 | `cudaErrorInvalidAddressSpace`            |                                       |                                           |
 | `cudaErrorInvalidPc`                      |                                       |                                           |
 | `cudaErrorLaunchFailure`                  | `hipErrorLaunchFailure`               | `hipper::errorLaunchFailure`              |
-| `cudaErrorCooperativeLaunchTooLarge`      | `hipErrorCooperativeLaunchTooLarge`   |                                           |
+| `cudaErrorCooperativeLaunchTooLarge`      | `hipErrorCooperativeLaunchTooLarge`   | Not currently supported (CUDA 9.0).       |
 | `cudaErrorNotPermitted`                   |                                       |                                           |
 | `cudaErrorNotSupported`                   | `hipErrorNotSupported`                | `hipper::errorNotSupported`               |
 | `cudaErrorSystemNotReady`                 |                                       |                                           |
@@ -198,17 +206,17 @@
 |---------------------------------------|-----------------------------------|---------------------------------------|
 | `cudaStream_t`                        | `hipStream_t`                     | `hipper::stream_t`                    |
 |                                       |                                   |                                       |
-| `cudaStreamAddCallback`               | `hipStreamAddCallback`            |                                       |
+| `cudaStreamAddCallback`               | `hipStreamAddCallback`            | `hipper::streamAddCallback`           |
 | `cudaStreamAttachMemAsync`            |                                   |                                       |
 | `cudaStreamBeginCapture`              |                                   |                                       |
 | `cudaStreamCreate`                    | `hipStreamCreate`                 | `hipper::streamCreate`                |
 | `cudaStreamCreateWithFlags`           | `hipStreamCreateWithFlags`        | `hipper::streamCreateWithFlags`       |
-| `cudaStreamCreateWithPriority`        | `hipStreamCreateWithPriority`     |                                       |
+| `cudaStreamCreateWithPriority`        | `hipStreamCreateWithPriority`     | `hipper::streamCreateWithPriority`    |
 | `cudaStreamDestroy`                   | `hipStreamDestroy`                | `hipper::streamDestroy`               |
 | `cudaStreamEndCapture`                |                                   |                                       |
 | `cudaStreamGetCaptureInfo`            |                                   |                                       |
-| `cudaStreamGetFlags`                  | `hipStreamGetFlags`               |                                       |
-| `cudaStreamGetPriority`               | `hipStreamGetPriority`            |                                       |
+| `cudaStreamGetFlags`                  | `hipStreamGetFlags`               | `hipper::streamGetFlags`              |
+| `cudaStreamGetPriority`               | `hipStreamGetPriority`            | `hipper::streamGetPriority`           |
 | `cudaStreamIsCapturing`               |                                   |                                       |
 | `cudaStreamQuery`                     | `hipStreamQuery`                  | `hipper::streamQuery`                 |
 | `cudaStreamSynchronize`               | `hipStreamSynchronize`            | `hipper::streamSynchronize`           |
@@ -250,6 +258,7 @@
 |   **CUDA**                                |   **HIP**                             |   **hipper**                          |
 |-------------------------------------------|---------------------------------------|---------------------------------------|
 | `cudaFuncAttributes`                      | `hipFuncAttributes`                   | `hipper::funcAttributes_t`            |
+|                                           |                                       |                                       |
 | `cudaFuncGetAttributes`                   | `hipFuncGetAttributes`                | `hipper::funcGetAttributes`           |
 | `cudaFuncSetAttribute`                    |                                       |                                       |
 | `cudaFuncSetCacheConfig`                  | `hipFuncSetCacheConfig`               | `hipper::funcSetCacheConfig`          |
@@ -282,23 +291,23 @@
 | `cudaFreeHost`                        | `hipHostFree`                     | `hipper::hostFree`                    |
 | `cudaFreeMipmappedArray`              |                                   |                                       |
 | `cudaGetMipmappedArrayLevel`          |                                   |                                       |
-| `cudaGetSymbolAddress`                | `hipGetSymbolAddress`             |                                       |
-| `cudaGetSymbolSize`                   | `hipGetSymbolSize`                |                                       |
-| `cudaHostAlloc`                       | `hipHostMalloc`                   |                                       |
+| `cudaGetSymbolAddress`                | `hipGetSymbolAddress`             | `hipper::getSymbolAddress`            |
+| `cudaGetSymbolSize`                   | `hipGetSymbolSize`                | `hipper::getSymbolSize`               |
+| `cudaHostAlloc`                       | `hipHostMalloc`                   | `hipper::hostMalloc`                  |
 | `cudaHostGetDevicePointer`            | `hipHostGetDevicePointer`         | `hipper::hostGetDevicePointer`        |
-| `cudaHostGetFlags`                    | `hipHostGetFlags`                 |                                       |
+| `cudaHostGetFlags`                    | `hipHostGetFlags`                 | `hipper::hostGetFlags`                |
 | `cudaHostRegister`                    | `hipHostRegister`                 | `hipper::hostRegister`                |
 | `cudaHostUnregister`                  | `hipHostUnregister`               | `hipper::hostUnregister`              |
 | `cudaMalloc`                          | `hipMalloc`                       | `hipper::malloc`                      |
 | `cudaMalloc3D`                        | `hipMalloc3D`                     |                                       |
 | `cudaMalloc3DArray`                   | `hipMalloc3DArray`                |                                       |
 | `cudaMallocArray`                     | `hipMallocArray`                  |                                       |
-| `cudaMallocHost`                      | `hipHostMalloc`                   |                                       |
+| `cudaMallocHost`                      | `hipHostMalloc`                   | Use `hipper::hostMalloc`.             |
 | `cudaMallocManaged`                   | `hipMallocManaged`                | `hipper::mallocManaged`               |
 | `cudaMallocMipmappedArray`            |                                   |                                       |
 | `cudaMallocPitch`                     |                                   |                                       |
 | `cudaMemAdvise`                       |                                   |                                       |
-| `cudaMemGetInfo`                      | `hipMemGetInfo`                   |                                       |
+| `cudaMemGetInfo`                      | `hipMemGetInfo`                   | `hipper::MemGetInfo`                  |
 | `cudaMemPrefetchAsync`                |                                   |                                       |
 | `cudaMemRangeGetAttribute`            |                                   |                                       |
 | `cudaMemRangeGetAttributes`           |                                   |                                       |
@@ -315,12 +324,12 @@
 | `cudaMemcpy3DPeer`                    |                                   |                                       |
 | `cudaMemcpy3DPeerAsync`               |                                   |                                       |
 | `cudaMemcpyAsync`                     | `hipMemcpyAsync`                  | `hipper::memcpyAsync`                 |
-| `cudaMemcpyFromSymbol`                | `hipMemcpyFromSymbol`             |                                       |
-| `cudaMemcpyFromSymbolAsync`           | `hipMemcpyFromSymbolAsync`        |                                       |
-| `cudaMemcpyPeer`                      | `hipMemcpyPeer`                   |                                       |
-| `cudaMemcpyPeerAsync`                 | `hipMemcpyPeerAsync`              |                                       |
-| `cudaMemcpyToSymbol`                  | `hipMemcpyToSymbol`               |                                       |
-| `cudaMemcpyToSymbolAsync`             | `hipMemcpyToSymbolAsync`          |                                       |
+| `cudaMemcpyFromSymbol`                | `hipMemcpyFromSymbol`             | `hipper::memcpyFromSymbol`            |
+| `cudaMemcpyFromSymbolAsync`           | `hipMemcpyFromSymbolAsync`        | `hipper::memcpyFromSymbolAsync`       |
+| `cudaMemcpyPeer`                      | `hipMemcpyPeer`                   | `hipper::memcpyPeer`                  |
+| `cudaMemcpyPeerAsync`                 | `hipMemcpyPeerAsync`              | `hipper::memcpyPeerAsync`             |
+| `cudaMemcpyToSymbol`                  | `hipMemcpyToSymbol`               | `hipper::memcpyToSymbol`              |
+| `cudaMemcpyToSymbolAsync`             | `hipMemcpyToSymbolAsync`          | `hipper::memcpyToSymbolAsync`         |
 | `cudaMemset`                          | `hipMemset`                       | `hipper::memset`                      |
 | `cudaMemset2D`                        | `hipMemset2D`                     |                                       |
 | `cudaMemset2DAsync`                   | `hipMemset2DAsync`                |                                       |
@@ -333,8 +342,10 @@
 
 ### Memory Copy Kinds
 
-| `cudaMemcpyKind`                      | `hipMemcpyKind`                   | `hipper::MemcpyKind_t`                |
+|   **CUDA**                            |   **HIP**                         |   **hipper**                          |
 |---------------------------------------|-----------------------------------|---------------------------------------|
+| `cudaMemcpyKind`                      | `hipMemcpyKind`                   | `hipper::memcpyKind_t`                |
+|                                       |                                   |                                       |
 | `cudaMemcpyHostToHost`                | `hipMemcpyHostToHost`             | `hipper::memcpyHostToHost`            |
 | `cudaMemcpyHostToDevice`              | `hipMemcpyHostToDevice`           | `hipper::memcpyHostToDevice`          |
 | `cudaMemcpyDeviceToHost`              | `hipMemcpyDeviceToHost`           | `hipper::memcpyDeviceToHost`          |
@@ -364,5 +375,5 @@
 | `cudaProfilerStart`                   | `hipProfilerStart`                | `hipper::profilerStart`\*             |
 | `cudaProfilerStop`                    | `hipProfilerStop`                 | `hipper::profilerStop`\*              |
 
-\* indicates a feature that is only available with `HIPPER_USE_DEPRECATED`.
+\*: feature only available with `HIPPER_USE_DEPRECATED`.
 

@@ -33,13 +33,34 @@ each of these flags is set, and how it can be used to replace CUDA-specific chec
 
 Most of the runtime API has been placed in the `hipper` namespace, and it is easy to
 convert between CUDA or HIP commands to `hipper` commands by replacing either
-`cuda` or `hip` with `hipper::` in the function signature. See the [detailed API](doc/runtime.md)
-for more details about what functions are supported.
+`cuda` or `hip` with `hipper::` in the function signature.
+
+```
+cudaMemset -> hipper::memset
+cudaMemcpyAsync -> hipper::memcpyAsync
+```
+
+See the [detailed API](doc/runtime.md) for details about what functions are supported.
 
 Most of the CUDA or HIP data types or defines have also been spoofed in the `hipper`
 namespace as enums or constants. You should work with the `hipper` types of these
 parameters, which will usually be automatically converted as needed to pass to the
 backend functions.
+
+```
+float* a[4];
+hipper::error_t code = hipper::memset(a, 0, 4*sizeof(float));
+if (code != hipper::success)
+    {
+    std::cout << "GPU error: " << hipper::getErrorString(code) << std::endl;
+    exit(code);
+    }
+```
+
+The caller is responsible for only using properties of data types that are present in
+the underlying API (e.g., members of `hipper::deviceProp_t` common to CUDA and HIP),
+or a compile error may be generated. If certain features are required in CUDA builds,
+use the `HIPPER_PLATFORM_NVCC` define.
 
 ## Kernel launch
 
@@ -53,10 +74,16 @@ launcher(kernel, args...)
 ```
 
 Within a kernel, a thread can be automatically mapped to a one-dimensional rank using the
-`hipper::threadRank<GridDim,BlockDim>` function template. Currently, specializations are
-provided for `GridDim=1` and `BlockDim=1,2,3`, but additional ones can be specified. See also
-the device functions for accessing the dimensions of the launch configuration if more advanced
-control is required.
+`hipper::threadRank<GridDim,BlockDim>` function template.
+
+```
+int idx = threadRank<1,1>();
+if (idx >= num_threads) return;
+```
+
+Currently, specializations are provided for `GridDim=1` and `BlockDim=1,2,3`, but additional
+ones can be specified. See also the device functions for accessing the dimensions of the
+launch configuration if more advanced control is required.
 
 ## Deprecated features
 
@@ -71,6 +98,12 @@ these, you can opt in:
 ## CMake setup & installation
 
 hipper has a functional CMake build system if you would like to install it to a shared location
-on your system. This installation can be detected using `find_package`. Alternatively, hipper
-can be included directly in an existing project via `add_subdirectory`. In either case, please
-link against the `hipper::hipper` target.
+on your system. This installation can be detected using `find_package` in `CONFIG` mode.
+Alternatively, hipper can be included directly in an existing project via `add_subdirectory`.
+In either case, please link against the `hipper::hipper` target.
+
+## Contributing
+
+Support for additional features or defines is always welcome! Please submit a pull request in the
+style of the existing code, including a new entry in the API documentation. If you identify any
+issues with the code, please create an issue, and we will try to attend to it promptly.

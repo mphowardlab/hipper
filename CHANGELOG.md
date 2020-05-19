@@ -6,5 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.0] - 2020-05-19
 ### Added
 - Basic runtime wrappers for CUDA and HIP.
+
+[Unreleased]: https://github.com/mphowardlab/hipper/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/mphowardlab/hipper/releases/tag/v0.1.0

@@ -7,7 +7,7 @@ cmake_minimum_required(VERSION 3.1)
 
 project(hipper VERSION 0.1.0 LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 11)
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/tools")
 
 # check if hipper is being used directly or via add_subdirectory
 set(HIPPER_MASTER_PROJECT OFF)
@@ -24,11 +24,11 @@ target_include_directories(hipper INTERFACE $<BUILD_INTERFACE:${CMAKE_CURRENT_LI
                                             $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 
 # install headers
-include(CMakePackageConfigHelpers)
 if(HIPPER_INSTALL)
+    include(CMakePackageConfigHelpers)
     install(DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/include/hipper DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 
-    configure_package_config_file(cmake/hipperConfig.cmake.in
+    configure_package_config_file(tools/hipperConfig.cmake.in
                                   "${CMAKE_CURRENT_BINARY_DIR}/hipperConfig.cmake"
                                   INSTALL_DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/cmake/hipper)
 

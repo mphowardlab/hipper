@@ -48,8 +48,9 @@ parameters, which will usually be automatically converted as needed to pass to t
 backend functions.
 
 ```
-float* a[4];
-hipper::error_t code = hipper::memset(a, 0, 4*sizeof(float));
+float* a;
+const int N = 4;
+hipper::error_t code = hipper::malloc(reinterpret_cast<void**>(&a), N*sizeof(float));
 if (code != hipper::success)
     {
     std::cout << "GPU error: " << hipper::getErrorString(code) << std::endl;

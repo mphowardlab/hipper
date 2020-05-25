@@ -42,7 +42,7 @@ find_package_handle_standard_args(hipper REQUIRED_VARS hipper_INCLUDE_DIR)
 set(hipper_INCLUDE_DIRS ${hipper_INCLUDE_DIR})
 
 # make an imported target available
-if(NOT TARGET hipper::hipper)
+if(hipper_FOUND AND NOT TARGET hipper::hipper)
     add_library(hipper::hipper INTERFACE IMPORTED)
     set_target_properties(hipper::hipper PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "${hipper_INCLUDE_DIRS}")
 endif()

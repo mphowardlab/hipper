@@ -1,0 +1,16 @@
+include(CheckLanguage)
+check_language(CUDA)
+if(NOT CMAKE_CUDA_COMPILER)
+    message(STATUS "No CUDA compiler, skipping CUDA tests.")
+    return()
+else()
+    enable_language(CUDA)
+endif()
+
+add_executable(test_hipper_cuda ${HIPPER_TEST_FILES})
+target_link_libraries(test_hipper_cuda PRIVATE hipper::hipper Catch2::Catch2)
+target_compile_definitions(test_hipper_cuda PRIVATE HIPPER_CUDA)
+
+foreach(label ${HIPPER_TEST_LABELS})
+    add_test(NAME hipper-cuda-${label} COMMAND test_hipper_cuda "[${label}]")
+endforeach()

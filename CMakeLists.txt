@@ -15,6 +15,7 @@ if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
     set(HIPPER_MASTER_PROJECT ON)
 endif()
 option(HIPPER_INSTALL "Install hipper files?" ${HIPPER_MASTER_PROJECT})
+option(HIPPER_TEST "Build hipper tests?" ${HIPPER_MASTER_PROJECT})
 
 # header-only targets
 include(GNUInstallDirs)
@@ -22,6 +23,13 @@ add_library(hipper INTERFACE)
 add_library(hipper::hipper ALIAS hipper)
 target_include_directories(hipper INTERFACE $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
                                             $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
+
+enable_testing()
+set(BUILD_TESTING ${HIPPER_TEST} CACHE BOOL "Build hipper tests?" FORCE)
+mark_as_advanced(BUILD_TESTING)
+if(HIPPER_TEST)
+    add_subdirectory(tests)
+endif()
 
 # install headers
 if(HIPPER_INSTALL)

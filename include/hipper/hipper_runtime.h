@@ -267,7 +267,7 @@ inline bool operator!=(funcCache_t a, funcCache b)
 #if defined(HIPPER_CUDA)
 typedef cudaLimit limit_t;
 #elif defined(HIPPER_HIP)
-typedef hipLimit_t limit;
+typedef hipLimit_t limit_t;
 #endif
 enum limit
     {

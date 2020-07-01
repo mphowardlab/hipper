@@ -27,7 +27,6 @@ target_include_directories(hipper INTERFACE $<BUILD_INTERFACE:${CMAKE_CURRENT_LI
 # add tests
 if(HIPPER_TEST)
     enable_testing()
-    mark_as_advanced(BUILD_TESTING)
     add_subdirectory(tests)
 endif()
 

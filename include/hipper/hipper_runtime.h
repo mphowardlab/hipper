@@ -899,19 +899,19 @@ __device__ inline dim3 gridSize()
 template<char GridDim=1, char BlockDim=1>
 __device__ int threadRank() = delete;
 template<>
-__device__ int threadRank<1,1>()
+inline __device__ int threadRank<1,1>()
     {
     return blockIndex().x*blockSize().x + threadIndex().x;
     }
 template<>
-__device__ int threadRank<1,2>()
+inline __device__ int threadRank<1,2>()
     {
     const dim3 bDim = blockSize();
     const dim3 tIdx = threadIndex();
     return blockIndex().x*bDim.x*(bDim.y + tIdx.y) + tIdx.x;
     }
 template<>
-__device__ int threadRank<1,3>()
+inline __device__ int threadRank<1,3>()
     {
     const dim3 bDim = blockSize();
     const dim3 tIdx = threadIndex();

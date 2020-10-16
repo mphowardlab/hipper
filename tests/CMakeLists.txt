@@ -2,10 +2,12 @@
 set(HIPPER_TEST_FILES
     test_hipper.cc
     test_kernel.cu
+    test_cub.cu
 )
 # the list of test labels to turn into executables
 set(HIPPER_TEST_LABELS
     kernel
+    CUB
 )
 
 # look for catch quietly, and pull down v2.12.2 if not found

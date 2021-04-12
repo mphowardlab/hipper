@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Changed
 - Update copyright. hipper is now maintained as part of our work at Auburn University.
+- The default git branch is renamed `main`. More
+  [information](https://sfconservancy.org/news/2020/jun/23/gitbranchname) is available.
 
 ## [0.2.0] - 2020-10-16
 ### Added

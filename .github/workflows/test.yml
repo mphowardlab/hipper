@@ -44,11 +44,34 @@ jobs:
     name: ROCm 7.2
     runs-on: ubuntu-24.04
     steps:
-      - name: Install build dependencies
+      - name: Install ROCm
         run: |
           wget https://repo.radeon.com/amdgpu-install/7.2/ubuntu/noble/amdgpu-install_7.2.70200-1_all.deb
           sudo apt-get install --yes ./amdgpu-install_7.2.70200-1_all.deb
           sudo apt-get update
-          sudo apt-get install --yes cmake python3-setuptools python3-wheel
+          sudo apt-get install --yes python3-setuptools python3-wheel
           sudo usermod -a -G render,video $LOGNAME
-          sudo apt-get install --yes rocm
+          sudo apt-get install --yes rocm-hip-sdk
+
+          sudo tee --append /etc/ld.so.conf.d/rocm.conf <<EOF
+          /opt/rocm/lib
+          /opt/rocm/lib64
+          EOF
+          sudo ldconfig
+
+          export PATH=$PATH:/opt/rocm-7.2.0/bin
+          export LD_LIBRARY_PATH=/opt/rocm-7.2.0/lib
+      - name: Install build dependencies
+        run: |
+          sudo apt-get install --yes cmake
+      - name: Checkout code
+        uses: actions/checkout@v6
+      - name: Configure
+        run: |
+          cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=/opt/rocm
+      - name: Build
+        run: |
+          cmake --build build
+      - name: Install
+        run: |
+          cmake --install build

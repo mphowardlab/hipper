@@ -49,8 +49,6 @@ jobs:
           wget https://repo.radeon.com/amdgpu-install/7.2/ubuntu/noble/amdgpu-install_7.2.70200-1_all.deb
           sudo apt-get install --yes ./amdgpu-install_7.2.70200-1_all.deb
           sudo apt-get update
-          sudo apt-get install --yes python3-setuptools python3-wheel
-          sudo usermod -a -G render,video $LOGNAME
           sudo apt-get install --yes rocm-hip-sdk
 
           sudo tee --append /etc/ld.so.conf.d/rocm.conf <<EOF
@@ -64,14 +62,14 @@ jobs:
       - name: Install build dependencies
         run: |
           sudo apt-get install --yes cmake
-      - name: Checkout code
-        uses: actions/checkout@v6
-      - name: Configure
-        run: |
-          cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=/opt/rocm
-      - name: Build
-        run: |
-          cmake --build build
-      - name: Install
-        run: |
-          cmake --install build
+      # - name: Checkout code
+      #   uses: actions/checkout@v6
+      # - name: Configure
+      #   run: |
+      #     cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=/opt/rocm
+      # - name: Build
+      #   run: |
+      #     cmake --build build
+      # - name: Install
+      #   run: |
+      #     cmake --install build

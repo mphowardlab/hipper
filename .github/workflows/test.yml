@@ -15,7 +15,7 @@ concurrency:
 
 jobs:
     build-cuda:
-        name: build
+        name: build [CUDA ${{ matrix.cuda }}]
         runs-on: ubuntu-24.04
         container:
             image: nvidia/cuda:${{ matrix.cuda }}-devel-ubuntu24.04
@@ -24,6 +24,10 @@ jobs:
             matrix:
                 cuda: ["12.8.1", "13.1.1"]
         steps:
+            - name: Setup environment
+              run: |
+                  apt-get update
+                  apt-get install --yes cmake
             - name: Checkout code
               uses: actions/checkout@v6
             - name: Configure

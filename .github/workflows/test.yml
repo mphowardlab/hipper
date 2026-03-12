@@ -14,38 +14,41 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build-cuda:
-    name: CUDA ${{ matrix.cuda }}, ROCm ${{ matrix.rocm }}
+  # build-cuda:
+  #   name: CUDA ${{ matrix.cuda }}
+  #   runs-on: ubuntu-24.04
+  #   container:
+  #     image: nvidia/cuda:${{ matrix.cuda }}-devel-ubuntu24.04
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       cuda: ["12.6.3", "12.8.1", "12.9.1", "13.0.2", "13.1.1"]
+  #   steps:
+  #     - name: Install build dependencies
+  #       run: |
+  #         apt-get update
+  #         apt-get install --yes cmake
+  #     - name: Checkout code
+  #       uses: actions/checkout@v6
+  #     - name: Configure
+  #       run: |
+  #         cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=/opt/rocm
+  #     - name: Build
+  #       run: |
+  #         cmake --build build
+  #     - name: Install
+  #       run: |
+  #         cmake --install build
+
+  build-hip:
+    name: ROCm 7.2
     runs-on: ubuntu-24.04
-    container:
-      image: nvidia/cuda:${{ matrix.cuda }}-devel-ubuntu24.04
-    strategy:
-      fail-fast: false
-      matrix:
-        #cuda: ["12.6.3", "12.8.1", "12.9.1", "13.0.2", "13.1.1"]
-        cuda: ["12.8.1"]
-        rocm: ["7.2.0"]
     steps:
       - name: Install build dependencies
         run: |
-          apt-get update
-          apt-get install --yes cmake wget
-      - name: Install HIP
-        run: |
           wget https://repo.radeon.com/amdgpu-install/7.2/ubuntu/noble/amdgpu-install_7.2.70200-1_all.deb
-          apt-get install ./amdgpu-install_7.2.70200-1_all.deb
-          apt-get update
-          apt-get install python3-setuptools python3-wheel
-          usermod -a -G render,video $LOGNAME
-          apt-get install rocm
-      # - name: Checkout code
-      #   uses: actions/checkout@v6
-      # - name: Configure
-      #   run: |
-      #     cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=/opt/rocm
-      # - name: Build
-      #   run: |
-      #     cmake --build build
-      # - name: Install
-      #   run: |
-      #     cmake --install build
+          sudo apt-get install --yes ./amdgpu-install_7.2.70200-1_all.deb
+          sudo apt-get update
+          sudo apt-get install --yes cmake python3-setuptools python3-wheel
+          sudo usermod -a -G render,video $LOGNAME
+          sudo apt-get install --yes rocm

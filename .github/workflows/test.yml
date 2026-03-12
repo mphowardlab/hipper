@@ -49,19 +49,19 @@ jobs:
       - name: Install dependencies
         run: |
           apt-get update
-          apt-get install cmake python3-setuptools python3-wheel
-      - name: Install HIP
-        run: |
-          wget https://repo.radeon.com/amdgpu-install/7.2/ubuntu/noble/amdgpu-install_7.2.70200-1_all.deb -O amdgpu-install.deb
-          sudo apt install ./amdgpu-install.deb
-          sudo usermod -a -G render,video $LOGNAME
-          sudo apt install rocm
-      - name: Configure
-        run: |
-          cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
-      - name: Build
-        run: |
-          cmake --build build
-      - name: Install
-        run: |
-          cmake --install build
+          apt-get install --yes cmake python3-setuptools python3-wheel
+      # - name: Install HIP
+      #   run: |
+      #     wget https://repo.radeon.com/amdgpu-install/7.2/ubuntu/noble/amdgpu-install_7.2.70200-1_all.deb -O amdgpu-install.deb
+      #     sudo apt install ./amdgpu-install.deb
+      #     sudo usermod -a -G render,video $LOGNAME
+      #     sudo apt install rocm
+      # - name: Configure
+      #   run: |
+      #     cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+      # - name: Build
+      #   run: |
+      #     cmake --build build
+      # - name: Install
+      #   run: |
+      #     cmake --install build

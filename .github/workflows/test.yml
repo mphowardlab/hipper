@@ -15,7 +15,7 @@ concurrency:
 
 jobs:
     build-cuda:
-        name: build [CUDA ${{ matrix.cuda }}]
+        name: CUDA ${{ matrix.cuda }}
         runs-on: ubuntu-24.04
         container:
             image: nvidia/cuda:${{ matrix.cuda }}-devel-ubuntu24.04
@@ -24,7 +24,7 @@ jobs:
             matrix:
                 cuda: ["12.8.1", "13.1.1"]
         steps:
-            - name: Setup environment
+            - name: Install dependencies
               run: |
                   apt-get update
                   apt-get install --yes cmake

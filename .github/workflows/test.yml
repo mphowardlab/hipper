@@ -14,54 +14,46 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  # build-cuda:
-  #   name: CUDA ${{ matrix.cuda }}
-  #   runs-on: ubuntu-24.04
-  #   container:
-  #     image: nvidia/cuda:${{ matrix.cuda }}-devel-ubuntu24.04
-  #   strategy:
-  #     fail-fast: false
-  #     matrix:
-  #       cuda: ["12.6.3", "12.8.1", "12.9.1", "13.0.2", "13.1.1"]
-  #   steps:
-  #     - name: Install dependencies
-  #       run: |
-  #         apt-get update
-  #         apt-get install --yes cmake
-  #     - name: Checkout code
-  #       uses: actions/checkout@v6
-  #     - name: Configure
-  #       run: |
-  #         cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
-  #     - name: Build
-  #       run: |
-  #         cmake --build build
-  #     - name: Install
-  #       run: |
-  #         cmake --install build
-
-  build-hip:
-    name: HIP 7.2
+  build-cuda:
+    name: CUDA ${{ matrix.cuda }}, ROCm ${{ matrix.rocm }}
     runs-on: ubuntu-24.04
+    container:
+      image: nvidia/cuda:${{ matrix.cuda }}-devel-ubuntu24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        #cuda: ["12.6.3", "12.8.1", "12.9.1", "13.0.2", "13.1.1"]
+        cuda: ["12.8.1"]
+        rocm: ["7.2.0"]
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v6
-      - name: Install dependencies
+      - name: Install build dependencies
         run: |
-          sudo apt-get update
-          sudo apt-get install --yes cmake python3-setuptools python3-wheel
+          apt-get update
+          apt-get install --yes cmake
+      - name: Clone HIP
+        uses: actions/checkout@v6
+        with:
+          repository: ROCm/rocm-systems
+          ref: rocm-${{ matrix.rocm }}
+          path: rocm-systems
       - name: Install HIP
         run: |
-          wget https://repo.radeon.com/amdgpu-install/7.2/ubuntu/noble/amdgpu-install_7.2.70200-1_all.deb -O amdgpu-install.deb
-          sudo apt-get install --yes ./amdgpu-install.deb
-          sudo usermod -a -G render,video $LOGNAME
-          sudo apt-get install --yes rocm
-      # - name: Configure
-      #   run: |
-      #     cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
-      # - name: Build
-      #   run: |
-      #     cmake --build build
-      # - name: Install
-      #   run: |
-      #     cmake --install build
+          export CLR_DIR="$(readlink -f rocm-systems/projects/clr)"
+          export HIP_DIR="$(readlink -f rocm-systems/projects/hip)"
+          export HIP_OTHER="$(readlink -f rocm-systems/projects/hipother)"
+          cd "$CLR_DIR"
+          mkdir build
+          cd build
+          cmake -DHIP_COMMON_DIR=$HIP_DIR -DHIP_PLATFORM=nvidia -DCLR_BUILD_HIP=ON -DCLR_BUILD_OCL=OFF -DHIPNV_DIR=$HIP_OTHER/hipnv ..
+          make install
+      - name: Checkout code
+        uses: actions/checkout@v6
+      - name: Configure
+        run: |
+          cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+      - name: Build
+        run: |
+          cmake --build build
+      - name: Install
+        run: |
+          cmake --install build

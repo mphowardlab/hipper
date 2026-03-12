@@ -1,41 +1,41 @@
 name: test
 
 on:
-    pull_request:
+  pull_request:
 
-    push:
-        branches:
-            - main
+  push:
+    branches:
+      - main
 
-    workflow_call:
+  workflow_call:
 
 concurrency:
-    group: "${{ github.workflow }}-${{ github.ref }}"
-    cancel-in-progress: true
+  group: "${{ github.workflow }}-${{ github.ref }}"
+  cancel-in-progress: true
 
 jobs:
-    build-cuda:
-        name: CUDA ${{ matrix.cuda }}
-        runs-on: ubuntu-24.04
-        container:
-            image: nvidia/cuda:${{ matrix.cuda }}-devel-ubuntu24.04
-        strategy:
-            fail-fast: false
-            matrix:
-                cuda: ["12.8.1", "13.1.1"]
-        steps:
-            - name: Install dependencies
-              run: |
-                  apt-get update
-                  apt-get install --yes cmake
-            - name: Checkout code
-              uses: actions/checkout@v6
-            - name: Configure
-              run: |
-                  cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
-            - name: Build
-              run: |
-                  cmake --build build
-            - name: Install
-              run: |
-                  cmake --install build
+  build-cuda:
+    name: CUDA ${{ matrix.cuda }}
+    runs-on: ubuntu-24.04
+    container:
+      image: nvidia/cuda:${{ matrix.cuda }}-devel-ubuntu24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        cuda: ["12.6.3", "12.8.1", "12.9.1", "13.0.2", "13.1.1"]
+    steps:
+      - name: Install dependencies
+        run: |
+          apt-get update
+          apt-get install --yes cmake
+      - name: Checkout code
+        uses: actions/checkout@v6
+      - name: Configure
+        run: |
+          cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+      - name: Build
+        run: |
+          cmake --build build
+      - name: Install
+        run: |
+          cmake --install build

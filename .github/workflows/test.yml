@@ -46,8 +46,8 @@ jobs:
     steps:
       - name: Install dependencies
         run: |
-          apt-get update
-          apt-get install cmake python3-setuptools python3-wheel
+          apt update
+          apt install --yes cmake python3-setuptools python3-wheel
       - name: Install HIP
         run: |
           wget https://repo.radeon.com/amdgpu-install/7.2/ubuntu/noble/amdgpu-install_7.2.70200-1_all.deb -O amdgpu-install.deb

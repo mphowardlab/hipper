@@ -29,7 +29,7 @@ jobs:
       - name: Install build dependencies
         run: |
           apt-get update
-          apt-get install --yes cmake
+          apt-get install --yes cmake wget
       - name: Install HIP
         run: |
           wget https://repo.radeon.com/amdgpu-install/7.2/ubuntu/noble/amdgpu-install_7.2.70200-1_all.deb

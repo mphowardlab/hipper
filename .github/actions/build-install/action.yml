@@ -1,4 +1,5 @@
 name: "Build and install"
+description: "Build and install hipper"
 inputs:
   platform:
     description: "Platform for building tests [nvidia, amd]"
@@ -10,14 +11,16 @@ runs:
     - name: Install build dependencies
       run: |
         sudo apt-get install --yes cmake
-    - name: Checkout code
-      uses: actions/checkout@v6
+      shell: bash
     - name: Configure
       run: |
         cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DHIPPER_TEST_PLATFORM=${{ inputs.platform }}
+      shell: bash
     - name: Build
       run: |
         cmake --build build
+      shell: bash
     - name: Install
       run: |
         cmake --install build
+      shell: bash

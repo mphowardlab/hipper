@@ -24,19 +24,33 @@ jobs:
       matrix:
         cuda: ["12.8.1"]
     steps:
+      - uses: actions/checkout@v6
       - name: Build and install
         uses: ./.github/actions/build-install
         with:
           platform: "nvidia"
 
   build-hip:
-    name: ROCm 7.2
+    name: ROCm ${{ matrix.rocm }}
     runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        rocm: ["7.2"]
     steps:
+      - name: Determine ROCm repository
+        id: set-rocm-repo
+        run: |
+          case "${{ matrix.rocm }}"
+          7.2)
+            echo "rocmdeb=https://repo.radeon.com/amdgpu-install/7.2/ubuntu/noble/amdgpu-install_7.2.70200-1_all.deb" >> $GITHUB_OUTPUT;;
+          *)
+            echo "Unknown ROCm version" && exit 1;;
+          esac
       - name: Install ROCm
         run: |
-          wget https://repo.radeon.com/amdgpu-install/7.2/ubuntu/noble/amdgpu-install_7.2.70200-1_all.deb
-          sudo apt-get install --yes ./amdgpu-install_7.2.70200-1_all.deb
+          wget ${{ steps.set-rocm-repo.outputs.rocmdeb }} -O amdgpu-install.deb
+          sudo apt-get install --yes ./amdgpu-install.deb
           sudo apt-get update
           sudo apt-get install --yes rocm-hip-sdk
 
@@ -45,6 +59,7 @@ jobs:
           /opt/rocm/lib64
           EOF
           sudo ldconfig
+      - uses: actions/checkout@v6
       - name: Build and install
         uses: ./.github/actions/build-install
         with:

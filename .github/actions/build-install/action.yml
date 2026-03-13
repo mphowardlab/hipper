@@ -10,7 +10,10 @@ runs:
   steps:
     - name: Configure
       run: |
-        cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DHIPPER_TEST_PLATFORM=${{ inputs.platform }}
+        cmake -S . -B build \
+          -DCMAKE_BUILD_TYPE=Release \
+          -DCMAKE_INSTALL_PREFIX=${GITHUB_WORKSPACE}/install \
+          -DHIPPER_TEST_PLATFORM=${{ inputs.platform }}
       shell: bash
     - name: Build
       run: |

@@ -24,7 +24,8 @@ jobs:
       matrix:
         cuda: ["12.8.1"]
     steps:
-      - uses: actions/checkout@v6
+      - name: Checkout code
+        uses: actions/checkout@v6
       - name: Install build dependencies
         run: |
           apt-get update
@@ -42,7 +43,8 @@ jobs:
       matrix:
         rocm: ["7.2"]
     steps:
-      - uses: actions/checkout@v6
+      - name: Checkout code
+        uses: actions/checkout@v6
       - name: Find ROCm repository
         id: set-rocm-repo
         run: |

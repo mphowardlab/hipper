@@ -35,7 +35,7 @@ jobs:
           cmake -S . -B build \
             -DCMAKE_BUILD_TYPE=Release \
             -DCMAKE_INSTALL_PREFIX=${GITHUB_WORKSPACE}/install \
-            -DHIPPER_TEST_PLATFORM=nvidia
+            -DHIPPER_TEST_PLATFORM=nvidia \
             -DCMAKE_CUDA_ARCHITECTURES=80
       - name: Build
         run: |

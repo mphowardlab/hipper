@@ -2,6 +2,15 @@
 # Copyright (c) 2021, Auburn University
 # This file is released under the Modified BSD License.
 
+# enable the language used for testing
+if(HIPPER_TEST_PLATFORM STREQUAL "nvidia")
+    enable_language(CUDA)
+elseif(HIPPER_TEST_PLATFORM STREQUAL "amd")
+    enable_language(HIP)
+else()
+    message(FATAL_ERROR "HIPPER_TEST_PLATFORM value ${HIPPER_TEST_PLATFORM} not recognized, must be nvidia or amd")
+endif()
+
 # the list of all source files
 set(HIPPER_TEST_FILES
     test_hipper.cc
@@ -28,8 +37,14 @@ if(NOT Catch2_FOUND)
     find_package(Catch2 REQUIRED)
 endif()
 
-# set full path to files for use in subdirectories
-list(TRANSFORM HIPPER_TEST_FILES PREPEND "${CMAKE_CURRENT_LIST_DIR}/")
+add_executable(test_hipper ${HIPPER_TEST_FILES})
+target_link_libraries(test_hipper PRIVATE hipper::hipper Catch2::Catch2)
+if(HIPPER_TEST_PLATFORM STREQUAL "nvidia")
+    target_compile_definitions(test_hipper PRIVATE HIPPER_CUDA)
+elseif(HIPPER_TEST_PLATFORM STREQUAL "amd")
+    target_compile_definitions(test_hipper PRIVATE HIPPER_HIP)
+endif()
 
-add_subdirectory(cuda)
-add_subdirectory(hip)
+foreach(label ${HIPPER_TEST_LABELS})
+    add_test(NAME hipper-${label} COMMAND test_hipper "[${label}]")
+endforeach()

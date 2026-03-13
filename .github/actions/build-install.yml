@@ -1,0 +1,23 @@
+name: "Build and install"
+inputs:
+  platform:
+    description: "Platform for building tests [nvidia, amd]"
+    required: true
+    default: ""
+runs:
+  using: "composite"
+  steps:
+    - name: Install build dependencies
+      run: |
+        sudo apt-get install --yes cmake
+    - name: Checkout code
+      uses: actions/checkout@v6
+    - name: Configure
+      run: |
+        cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DHIPPER_TEST_PLATFORM=${{ inputs.platform }}
+    - name: Build
+      run: |
+        cmake --build build
+    - name: Install
+      run: |
+        cmake --install build

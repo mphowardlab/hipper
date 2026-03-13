@@ -30,10 +30,19 @@ jobs:
         run: |
           apt-get update
           apt-get install --yes cmake
-      - name: Build and install
-        uses: ./.github/actions/build-install
-        with:
-          platform: "nvidia"
+      - name: Configure
+        run: |
+          cmake -S . -B build \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_INSTALL_PREFIX=${GITHUB_WORKSPACE}/install \
+            -DHIPPER_TEST_PLATFORM=nvidia
+            -DCMAKE_CUDA_ARCHITECTURES=80
+      - name: Build
+        run: |
+          cmake --build build
+      - name: Install
+        run: |
+          cmake --install build
 
   build-hip:
     name: ROCm ${{ matrix.rocm }}
@@ -70,7 +79,15 @@ jobs:
       - name: Install build dependencies
         run: |
           sudo apt-get install --yes cmake
-      - name: Build and install
-        uses: ./.github/actions/build-install
-        with:
-          platform: "amd"
+      - name: Configure
+        run: |
+          cmake -S . -B build \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_INSTALL_PREFIX=${GITHUB_WORKSPACE}/install \
+            -DHIPPER_TEST_PLATFORM=amd
+      - name: Build
+        run: |
+          cmake --build build
+      - name: Install
+        run: |
+          cmake --install build

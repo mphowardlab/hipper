@@ -26,7 +26,7 @@ jobs:
     steps:
       - name: Install build dependencies
         run: |
-          sudo apt-get install --yes cmake
+          apt-get install --yes cmake
       - uses: actions/checkout@v6
       - name: Build and install
         uses: ./.github/actions/build-install
@@ -44,7 +44,7 @@ jobs:
       - name: Find ROCm repository
         id: set-rocm-repo
         run: |
-          rocmdeb=$(grep "^${{ matrix.rocm }} " radeon-repo.txt | awk '{print $2}')
+          rocmdeb=$(grep "^${{ matrix.rocm }} " ./.github/workflows/radeon-repo.txt | awk '{print $2}')
           if [[ -n $rocmdeb ]]; then
             echo "rocmdeb=$rocmdeb" >> $GITHUB_OUTPUT
           else

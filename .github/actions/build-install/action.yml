@@ -8,10 +8,6 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: Install build dependencies
-      run: |
-        sudo apt-get install --yes cmake
-      shell: bash
     - name: Configure
       run: |
         cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DHIPPER_TEST_PLATFORM=${{ inputs.platform }}

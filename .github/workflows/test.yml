@@ -24,6 +24,9 @@ jobs:
       matrix:
         cuda: ["12.8.1"]
     steps:
+      - name: Install build dependencies
+        run: |
+          sudo apt-get install --yes cmake
       - uses: actions/checkout@v6
       - name: Build and install
         uses: ./.github/actions/build-install
@@ -38,17 +41,18 @@ jobs:
       matrix:
         rocm: ["7.2"]
     steps:
-      - name: Determine ROCm repository
+      - name: Find ROCm repository
         id: set-rocm-repo
         run: |
-          case "${{ matrix.rocm }}"
-          7.2)
-            echo "rocmdeb=https://repo.radeon.com/amdgpu-install/7.2/ubuntu/noble/amdgpu-install_7.2.70200-1_all.deb" >> $GITHUB_OUTPUT;;
-          *)
-            echo "Unknown ROCm version" && exit 1;;
-          esac
+          rocmdeb=$(grep "^${{ matrix.rocm }} " radeon-repo.txt | awk '{print $2}')
+          if [[ -n $rocmdeb ]]; then
+            echo "rocmdeb=$rocmdeb" >> $GITHUB_OUTPUT
+          else
+            echo "Unknown ROCm version" && exit 1
+          fi
       - name: Install ROCm
         run: |
+
           wget ${{ steps.set-rocm-repo.outputs.rocmdeb }} -O amdgpu-install.deb
           sudo apt-get install --yes ./amdgpu-install.deb
           sudo apt-get update
@@ -59,6 +63,9 @@ jobs:
           /opt/rocm/lib64
           EOF
           sudo ldconfig
+      - name: Install build dependencies
+        run: |
+          sudo apt-get install --yes cmake
       - uses: actions/checkout@v6
       - name: Build and install
         uses: ./.github/actions/build-install

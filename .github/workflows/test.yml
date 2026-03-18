@@ -18,12 +18,25 @@ jobs:
     name: CUDA ${{ matrix.cuda }}
     runs-on: ubuntu-24.04
     container:
-      image: nvidia/cuda:${{ matrix.cuda }}-devel-ubuntu24.04
+      image: nvidia/cuda:${{ matrix.cuda }}-devel-ubuntu${{ matrix.ubuntu }}
     strategy:
       fail-fast: false
       matrix:
-        cuda:
-          ["12.4.1", "12.5.1", "12.6.3", "12.8.1", "12.9.1", "13.0.2", "13.1.1"]
+        include:
+          - cuda: "12.4.1"
+            ubuntu: "22.04"
+          - cuda: "12.5.1"
+            ubuntu: "24.04"
+          - cuda: "12.6.3"
+            ubuntu: "24.04"
+          - cuda: "12.8.1"
+            ubuntu: "24.04"
+          - cuda: "12.9.1"
+            ubuntu: "24.04"
+          - cuda: "13.0.2"
+            ubuntu: "24.04"
+          - cuda: "13.1.1"
+            ubuntu: "24.04"
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
@@ -94,6 +107,11 @@ jobs:
           /opt/rocm/lib64
           EOF
           sudo ldconfig
+
+          # inject rocm 7.1.1 onto path
+          if [[ "${{ matrix.rocm }}" == "7.1.1" ]]; then
+            echo "/opt/rocm-7.1.1/bin" >> $GITHUB_PATH
+          fi
       - name: Install build dependencies
         run: |
           sudo apt-get install --yes cmake

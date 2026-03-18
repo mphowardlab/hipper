@@ -4,10 +4,10 @@
 
 # Maintainer: mphoward
 
-cmake_minimum_required(VERSION 3.1)
+cmake_minimum_required(VERSION 3.28)
 
 project(hipper VERSION 0.2.0 LANGUAGES CXX)
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/tools")
 
 # check if hipper is being used directly or via add_subdirectory
@@ -16,7 +16,7 @@ if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
     set(HIPPER_MASTER_PROJECT ON)
 endif()
 option(HIPPER_INSTALL "Install hipper files?" ${HIPPER_MASTER_PROJECT})
-option(HIPPER_TEST "Build hipper tests?" ${HIPPER_MASTER_PROJECT})
+set(HIPPER_TEST_PLATFORM "" CACHE STRING "Platform for hipper tests [CUDA, HIP]")
 
 # header-only targets
 include(GNUInstallDirs)
@@ -24,12 +24,6 @@ add_library(hipper INTERFACE)
 add_library(hipper::hipper ALIAS hipper)
 target_include_directories(hipper INTERFACE $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
                                             $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
-
-# add tests
-if(HIPPER_TEST)
-    enable_testing()
-    add_subdirectory(tests)
-endif()
 
 # install headers
 if(HIPPER_INSTALL)
@@ -53,4 +47,10 @@ if(HIPPER_INSTALL)
     install(EXPORT hipperTargets
             NAMESPACE hipper::
             DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/cmake/hipper)
+endif()
+
+# add tests
+if(HIPPER_TEST_PLATFORM)
+    enable_testing()
+    add_subdirectory(tests)
 endif()

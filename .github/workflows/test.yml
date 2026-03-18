@@ -1,0 +1,96 @@
+name: test
+
+on:
+  pull_request:
+
+  push:
+    branches:
+      - main
+
+  workflow_call:
+
+concurrency:
+  group: "${{ github.workflow }}-${{ github.ref }}"
+  cancel-in-progress: true
+
+jobs:
+  build-cuda:
+    name: CUDA ${{ matrix.cuda }}
+    runs-on: ubuntu-24.04
+    container:
+      image: nvidia/cuda:${{ matrix.cuda }}-devel-ubuntu24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        cuda: ["12.6.3", "12.8.1", "12.9.1", "13.0.2", "13.1.1"]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+      - name: Install build dependencies
+        run: |
+          apt-get update
+          apt-get install --yes cmake
+      - name: Configure
+        run: |
+          cmake -S . -B build \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_COMPILE_WARNING_AS_ERROR=ON \
+            -DCMAKE_INSTALL_PREFIX=${GITHUB_WORKSPACE}/install \
+            -DHIPPER_TEST_PLATFORM=CUDA \
+            -DCMAKE_CUDA_ARCHITECTURES=80
+      - name: Build
+        run: |
+          cmake --build build
+      - name: Install
+        run: |
+          cmake --install build
+
+  build-hip:
+    name: ROCm ${{ matrix.rocm }}
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        # 7.1.1 skipped because the repository did not work
+        rocm: ["6.2.4", "6.3.4", "6.4.4", "7.0.3", "7.2.0"]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+      - name: Find ROCm repository
+        id: set-rocm-repo
+        run: |
+          rocmfile=./.github/rocm/${{ matrix.rocm }}.txt
+          if [[ -f $rocmfile ]]; then
+            rocmdeb=$(cat $rocmfile)
+            echo "rocmdeb=$rocmdeb" >> $GITHUB_OUTPUT
+          else
+            echo "Unknown ROCm version" && exit 1
+          fi
+      - name: Install ROCm
+        run: |
+          wget ${{ steps.set-rocm-repo.outputs.rocmdeb }} -O amdgpu-install.deb
+          sudo apt-get install --yes ./amdgpu-install.deb
+          sudo apt-get update
+          sudo apt-get install --yes rocm-hip-sdk
+
+          sudo tee --append /etc/ld.so.conf.d/rocm.conf <<EOF
+          /opt/rocm/lib
+          /opt/rocm/lib64
+          EOF
+          sudo ldconfig
+      - name: Install build dependencies
+        run: |
+          sudo apt-get install --yes cmake
+      - name: Configure
+        run: |
+          cmake -S . -B build \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_COMPILE_WARNING_AS_ERROR=ON \
+            -DCMAKE_INSTALL_PREFIX=${GITHUB_WORKSPACE}/install \
+            -DHIPPER_TEST_PLATFORM=HIP
+      - name: Build
+        run: |
+          cmake --build build
+      - name: Install
+        run: |
+          cmake --install build

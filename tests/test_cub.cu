@@ -23,11 +23,11 @@ TEST_CASE("CUB operations", "[CUB]")
     // size temporary memory
     void *tmp = NULL;
     size_t tmp_bytes = 0;
-    hipper::cub::DeviceReduce::Sum(tmp,tmp_bytes,a,total,N);
+    static_cast<void>(hipper::cub::DeviceReduce::Sum(tmp,tmp_bytes,a,total,N));
     REQUIRE_SUCCESS(hipper::mallocManaged(reinterpret_cast<void**>(&tmp), tmp_bytes));
 
     // take sum
-    hipper::cub::DeviceReduce::Sum(tmp,tmp_bytes,a,total,N);
+    static_cast<void>(hipper::cub::DeviceReduce::Sum(tmp,tmp_bytes,a,total,N));
     REQUIRE_SUCCESS(hipper::deviceSynchronize());
 
     // check output

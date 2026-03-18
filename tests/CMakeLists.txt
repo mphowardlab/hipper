@@ -2,6 +2,15 @@
 # Copyright (c) 2021, Auburn University
 # This file is released under the Modified BSD License.
 
+# enable the language used for testing
+if(HIPPER_TEST_PLATFORM STREQUAL "CUDA")
+    enable_language(CUDA)
+elseif(HIPPER_TEST_PLATFORM STREQUAL "HIP")
+    enable_language(HIP)
+else()
+    message(FATAL_ERROR "HIPPER_TEST_PLATFORM value ${HIPPER_TEST_PLATFORM} not recognized, must be CUDA or HIP")
+endif()
+
 # the list of all source files
 set(HIPPER_TEST_FILES
     test_hipper.cc
@@ -14,14 +23,11 @@ set(HIPPER_TEST_LABELS
     CUB
 )
 
-# look for catch quietly, and pull down v2.12.2 if not found
-if(POLICY CMP0074)
-    cmake_policy(SET CMP0074 NEW)
-endif()
-find_package(Catch2 QUIET)
+# look for catch quietly, and pull down v2.13.10 if not found
+find_package(Catch2 2 QUIET)
 if(NOT Catch2_FOUND)
     message(STATUS "Downloading Catch2...")
-    set(url https://github.com/catchorg/Catch2/releases/download/v2.12.2/catch.hpp)
+    set(url https://github.com/catchorg/Catch2/releases/download/v2.13.10/catch.hpp)
     file(DOWNLOAD ${url} "${CMAKE_CURRENT_BINARY_DIR}/catch2/catch.hpp" STATUS status)
     list(GET status 0 error)
     if(error)
@@ -31,8 +37,13 @@ if(NOT Catch2_FOUND)
     find_package(Catch2 REQUIRED)
 endif()
 
-# set full path to files for use in subdirectories
-list(TRANSFORM HIPPER_TEST_FILES PREPEND "${CMAKE_CURRENT_LIST_DIR}/")
+add_executable(test_hipper ${HIPPER_TEST_FILES})
+if (HIPPER_TEST_PLATFORM STREQUAL "HIP")
+    set_source_files_properties(${HIPPER_TEST_FILES} PROPERTIES LANGUAGE HIP)
+endif()
+target_link_libraries(test_hipper PRIVATE hipper::hipper Catch2::Catch2)
+target_compile_definitions(test_hipper PRIVATE HIPPER_${HIPPER_TEST_PLATFORM})
 
-add_subdirectory(cuda)
-add_subdirectory(hip)
+foreach(label ${HIPPER_TEST_LABELS})
+    add_test(NAME hipper-${label} COMMAND test_hipper "[${label}]")
+endforeach()

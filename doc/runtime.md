@@ -376,4 +376,3 @@
 | `cudaProfilerStop`                    | `hipProfilerStop`                 | `hipper::profilerStop`\*              |
 
 \*: feature only available with `HIPPER_USE_DEPRECATED`.
-

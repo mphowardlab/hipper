@@ -1,6 +1,6 @@
 /*
 Copyright (c) 2020, Michael P. Howard
-Copyright (c) 2021, Auburn University
+Copyright (c) 2021-2026, Auburn University
 
 All rights reserved.
 

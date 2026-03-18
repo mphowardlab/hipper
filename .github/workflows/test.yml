@@ -50,7 +50,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        rocm: ["6.2.4", "6.3.4", "6.4.4", "7.0.3", "7.1.1", "7.2.0"]
+        # 7.1.1 skipped because the repository did not work
+        rocm: ["6.2.4", "6.3.4", "6.4.4", "7.0.3", "7.2.0"]
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
@@ -77,11 +78,6 @@ jobs:
           /opt/rocm/lib64
           EOF
           sudo ldconfig
-
-          # try to force root for this defective installation
-          if [[ "${{ matrix.rocm }}" == "7.1.1" ]]; then
-            echo "CMAKE_HIP_COMPILER_ROCM_ROOT=/opt/rocm-${{ matrix.rocm }}" >> $GITHUB_ENV
-          fi
       - name: Install build dependencies
         run: |
           sudo apt-get install --yes cmake

@@ -18,25 +18,11 @@ jobs:
     name: CUDA ${{ matrix.cuda }}
     runs-on: ubuntu-24.04
     container:
-      image: nvidia/cuda:${{ matrix.cuda }}-devel-ubuntu${{ matrix.ubuntu }}
+      image: nvidia/cuda:${{ matrix.cuda }}-devel-ubuntu24.04
     strategy:
       fail-fast: false
       matrix:
-        include:
-          - cuda: "12.4.1"
-            ubuntu: "22.04"
-          - cuda: "12.5.1"
-            ubuntu: "24.04"
-          - cuda: "12.6.3"
-            ubuntu: "24.04"
-          - cuda: "12.8.1"
-            ubuntu: "24.04"
-          - cuda: "12.9.1"
-            ubuntu: "24.04"
-          - cuda: "13.0.2"
-            ubuntu: "24.04"
-          - cuda: "13.1.1"
-            ubuntu: "24.04"
+        cuda: ["12.6.3", "12.8.1", "12.9.1", "13.0.2", "13.1.1"]
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
@@ -60,27 +46,11 @@ jobs:
 
   build-hip:
     name: ROCm ${{ matrix.rocm }}
-    runs-on: ubuntu-${{ matrix.ubuntu }}
+    runs-on: ubuntu-24.04
     strategy:
       fail-fast: false
       matrix:
-        include:
-          - rocm: "6.0.3"
-            ubuntu: "22.04"
-          - rocm: "6.1.4"
-            ubuntu: "22.04"
-          - rocm: "6.2.4"
-            ubuntu: "24.04"
-          - rocm: "6.3.4"
-            ubuntu: "24.04"
-          - rocm: "6.4.4"
-            ubuntu: "24.04"
-          - rocm: "7.0.3"
-            ubuntu: "24.04"
-          - rocm: "7.1.1"
-            ubuntu: "24.04"
-          - rocm: "7.2.0"
-            ubuntu: "24.04"
+        rocm: ["6.2.4", "6.3.4", "6.4.4", "7.0.3", "7.1.1", "7.2.0"]
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
@@ -108,9 +78,9 @@ jobs:
           EOF
           sudo ldconfig
 
-          # inject rocm 7.1.1 onto path
+          # try to force root for this defective installation
           if [[ "${{ matrix.rocm }}" == "7.1.1" ]]; then
-            echo "/opt/rocm-7.1.1/bin" >> $GITHUB_PATH
+            echo "CMAKE_HIP_COMPILER_ROCM_ROOT=/opt/rocm-${{ matrix.rocm }}" >> $GITHUB_ENV
           fi
       - name: Install build dependencies
         run: |

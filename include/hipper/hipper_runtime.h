@@ -1,6 +1,6 @@
 /*
 Copyright (c) 2020, Michael P. Howard
-Copyright (c) 2021, Auburn University
+Copyright (c) 2021-2026, Auburn University
 
 All rights reserved.
 
@@ -46,13 +46,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <utility>
 
-// set platform based on what mode is being used
-#if (defined(HIPPER_CUDA) && defined(__NVCC__)) || (defined(HIPPER_HIP) && defined(__HIP_PLATFORM_NVCC__))
-#define HIPPER_PLATFORM_NVCC
-#elif (defined(HIPPER_HIP) && defined(__HCC__))
-#define HIPPER_PLATFORM_HCC
-#endif
-
 // set device compilation flag based on CUDA or HIP flags (using HIP criteria)
 #if (defined(HIPPER_CUDA) && defined(__CUDA_ARCH__) && __CUDA_ARCH__ != 0) || (defined(HIPPER_HIP) && defined(__HIP_DEVICE_COMPILE__))
 #define HIPPER_DEVICE_COMPILE 1
@@ -60,9 +53,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 namespace hipper
 {
-/*!
- * \defgroup errors Error handling
- * @{
+/*
+ * 3. Error handling
  */
 typedef HIPPER(Error_t) error_t;
 enum error
@@ -88,22 +80,14 @@ enum error
     errorInvalidDevice = HIPPER(ErrorInvalidDevice),
     #if defined(HIPPER_CUDA)
     errorInvalidImage = cudaErrorInvalidKernelImage,
-    /* CUDA 10.1 only
-    #if CUDART_VERSION >= 10020
     errorInvalidContext = cudaErrorDeviceUninitialized,
-    #else // typo in CUDA 10.1
-    errorInvalidContext = cudaErrorDeviceUninitilialized,
-    #endif
-    */
     errorMapFailed = cudaErrorMapBufferObjectFailed,
     errorUnmapFailed = cudaErrorUnmapBufferObjectFailed,
     errorNoBinaryForGPU = cudaErrorNoKernelImageForDevice,
     errorECCNotCorrectable = cudaErrorECCUncorrectable,
     #elif defined(HIPPER_HIP)
     errorInvalidImage = hipErrorInvalidImage,
-    /* CUDA 10.1 only
     errorInvalidContext = hipErrorInvalidContext,
-    */
     errorMapFailed = hipErrorMapFailed,
     errorUnmapFailed = hipErrorUnmapFailed,
     errorNoBinaryForGPU = hipErrorNoBinaryForGpu,
@@ -117,23 +101,17 @@ enum error
     errorInvalidKernelFile = hipErrorInvalidKernelFile,
     #endif
     errorInvalidGraphicsContext = HIPPER(ErrorInvalidGraphicsContext),
-    /* CUDA 10.1 only
     errorInvalidSource = HIPPER(ErrorInvalidSource),
     errorFileNotFound = HIPPER(ErrorFileNotFound),
-    */
     errorSharedObjectSymbolNotFound = HIPPER(ErrorSharedObjectSymbolNotFound),
     errorSharedObjectInitFailed = HIPPER(ErrorSharedObjectInitFailed),
     errorOperatingSystem = HIPPER(ErrorOperatingSystem),
     #if defined(HIPPER_CUDA)
     errorInvalidHandle = cudaErrorInvalidResourceHandle,
-    /* CUDA 10.1 only
     errorNotFound = cudaErrorSymbolNotFound,
-    */
     #elif defined(HIPPER_HIP)
     errorInvalidHandle = hipErrorInvalidHandle,
-    /* CUDA 10.1 only
     errorNotFound = hipErrorNotFound,
-    */
     #endif
     errorNotReady = HIPPER(ErrorNotReady),
     errorIllegalAddress = HIPPER(ErrorIllegalAddress),
@@ -150,9 +128,7 @@ enum error
     errorHostMemoryAlreadyRegistered = HIPPER(ErrorHostMemoryAlreadyRegistered),
     errorHostMemoryNotRegistered = HIPPER(ErrorHostMemoryNotRegistered),
     errorLaunchFailure = HIPPER(ErrorLaunchFailure),
-    /* CUDA 9.0 only
     errorCooperativeLaunchTooLarge = HIPPER(ErrorCooperativeLaunchTooLarge),
-    */
     errorNotSupported = HIPPER(ErrorNotSupported),
     errorUnknown = HIPPER(ErrorUnknown)
     };
@@ -198,7 +174,6 @@ inline error_t peekAtLastError(void)
     {
     return HIPPER(PeekAtLastError)();
     }
-/*! @} */
 
 /*!
  * \defgroup devices Device Management
@@ -396,13 +371,11 @@ inline error_t deviceSetCacheConfig(funcCache cacheConfig)
     return HIPPER(DeviceSetCacheConfig)(castFuncCache(cacheConfig));
     }
 
-#if 0 // not currently supported in HIP, although it is supposed to be
 //! Set resource limits.
 inline error_t deviceSetLimit(limit lim, size_t value)
     {
     return HIPPER(DeviceSetLimit)(castLimit(lim), value);
     }
-#endif
 
 //! Wait for compute device to finish.
 inline error_t deviceSynchronize(void)
@@ -422,17 +395,11 @@ inline error_t getDeviceCount(int* count)
     return HIPPER(GetDeviceCount)(count);
     }
 
-#if HIPPER_USE_DEPRECATED // hipCtxGetFlags is deprecated
 //! Gets the flags for the current device.
 inline error_t getDeviceFlags(unsigned int* flags)
     {
-    #if defined(HIPPER_CUDA)
-    return cudaGetDeviceFlags(flags);
-    #elif defined(HIPPER_HIP)
-    return hipCtxGetFlags(flags);
-    #endif
+    return HIPPER(GetDeviceFlags)(flags);
     }
-#endif
 
 //! Returns information about the compute-device.
 inline error_t getDeviceProperties(deviceProp_t* prop, int device)
@@ -841,146 +808,6 @@ inline error_t funcSetCacheConfig(const void* func, funcCache cacheConfig)
     return HIPPER(FuncSetCacheConfig)(func, castFuncCache(cacheConfig));
     }
 
-//! Thread index in block.
-__device__ inline dim3 threadIndex()
-    {
-    #if defined(HIPPER_CUDA)
-    return threadIdx;
-    #elif defined(HIPPER_HIP)
-    return dim3(hipThreadIdx_x, hipThreadIdx_y, hipThreadIdx_z);
-    #endif
-    }
-
-//! Number of threads in block.
-__device__ inline dim3 blockSize()
-    {
-    #if defined(HIPPER_CUDA)
-    return blockDim;
-    #elif defined(HIPPER_HIP)
-    return dim3(hipBlockDim_x, hipBlockDim_y, hipBlockDim_z);
-    #endif
-    }
-
-//! Block index in grid.
-__device__ inline dim3 blockIndex()
-    {
-    #if defined(HIPPER_CUDA)
-    return blockIdx;
-    #elif defined(HIPPER_HIP)
-    return dim3(hipBlockIdx_x, hipBlockIdx_y, hipBlockIdx_z);
-    #endif
-    }
-
-//! Number of blocks in grid.
-__device__ inline dim3 gridSize()
-    {
-    #if defined(HIPPER_CUDA)
-    return gridDim;
-    #elif defined(HIPPER_HIP)
-    return dim3(hipGridDim_x, hipGridDim_y, hipGridDim_z);
-    #endif
-    }
-
-//! Map the launch dimensions to a one-dimensional rank.
-template<char GridDim=1, char BlockDim=1>
-__device__ int threadRank() = delete;
-template<>
-inline __device__ int threadRank<1,1>()
-    {
-    return blockIndex().x*blockSize().x + threadIndex().x;
-    }
-template<>
-inline __device__ int threadRank<1,2>()
-    {
-    const dim3 bDim = blockSize();
-    const dim3 tIdx = threadIndex();
-    return blockIndex().x*bDim.x*(bDim.y + tIdx.y) + tIdx.x;
-    }
-template<>
-inline __device__ int threadRank<1,3>()
-    {
-    const dim3 bDim = blockSize();
-    const dim3 tIdx = threadIndex();
-    return blockIndex().x*bDim.x*(bDim.y*(bDim.z + tIdx.z) + tIdx.y) + tIdx.x;
-    }
-
-//! Launch a compute kernel on the GPU
-class KernelLauncher
-    {
-    public:
-        KernelLauncher(int blocks, int threadsPerBlock, size_t sharedBytes, stream_t stream)
-            : blocks_(blocks),
-              threadsPerBlock_(threadsPerBlock),
-              sharedBytes_(sharedBytes),
-              stream_(stream)
-            {}
-
-        KernelLauncher(int blocks, int threadsPerBlock, size_t sharedBytes)
-            : blocks_(blocks),
-              threadsPerBlock_(threadsPerBlock),
-              sharedBytes_(sharedBytes),
-              stream_(0)
-            {}
-
-        KernelLauncher(int blocks, int threadsPerBlock, stream_t stream)
-            : blocks_(blocks),
-              threadsPerBlock_(threadsPerBlock),
-              sharedBytes_(0),
-              stream_(stream)
-            {}
-
-        KernelLauncher(int blocks, int threadsPerBlock)
-            : blocks_(blocks),
-              threadsPerBlock_(threadsPerBlock),
-              sharedBytes_(0),
-              stream_(0)
-            {}
-
-        KernelLauncher(dim3 blocks, dim3 threadsPerBlock, size_t sharedBytes, stream_t stream)
-            : blocks_(blocks),
-              threadsPerBlock_(threadsPerBlock),
-              sharedBytes_(sharedBytes),
-              stream_(stream)
-            {}
-
-        KernelLauncher(dim3 blocks, dim3 threadsPerBlock, size_t sharedBytes)
-            : blocks_(blocks),
-              threadsPerBlock_(threadsPerBlock),
-              sharedBytes_(sharedBytes),
-              stream_(0)
-            {}
-
-        KernelLauncher(dim3 blocks, dim3 threadsPerBlock, stream_t stream)
-            : blocks_(blocks),
-              threadsPerBlock_(threadsPerBlock),
-              sharedBytes_(0),
-              stream_(stream)
-            {}
-
-        KernelLauncher(dim3 blocks, dim3 threadsPerBlock)
-            : blocks_(blocks),
-              threadsPerBlock_(threadsPerBlock),
-              sharedBytes_(0),
-              stream_(0)
-            {}
-
-        template<class Kernel, class ...Args>
-        void operator()(const Kernel& kernel, Args&&... args)
-            {
-            #if defined(HIPPER_CUDA)
-            kernel<<<blocks_,threadsPerBlock_,sharedBytes_,stream_>>>(std::forward<Args>(args)...);
-            #elif defined(HIPPER_HIP)
-            hipLaunchKernelGGL(kernel,blocks_,threadsPerBlock_,sharedBytes_,stream_,std::forward<Args>(args)...);
-            #endif
-            }
-
-    private:
-        dim3 blocks_;
-        dim3 threadsPerBlock_;
-        size_t sharedBytes_;
-        stream_t stream_;
-    };
-/*! @} */
 } // end namespace hipper
 
 #endif // HIPPER_HIPPER_RUNTIME_H_

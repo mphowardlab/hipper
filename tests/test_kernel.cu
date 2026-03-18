@@ -7,7 +7,7 @@
 
 __global__ void set_thread(int* a, const int N)
     {
-    int rank = hipper::threadRank<1,1>();
+    int rank = blockIdx.x * blockDim.x + threadIdx.x;
     if (rank >= N) return;
 
     a[rank] = rank+1;
@@ -24,7 +24,7 @@ TEST_CASE("Basic kernel launch", "[kernel]")
     REQUIRE(a[0] == 0);
     REQUIRE(a[1] == 0);
 
-    hipper::KernelLauncher(1, 32)(set_thread, a, N);
+    set_thread<<<1, 32>>>(a, N);
     REQUIRE_SUCCESS(hipper::peekAtLastError());
     REQUIRE_SUCCESS(hipper::deviceSynchronize());
     REQUIRE(a[0] == 1);

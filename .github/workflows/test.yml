@@ -34,6 +34,7 @@ jobs:
         run: |
           cmake -S . -B build \
             -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_COMPILE_WARNING_AS_ERROR=ON \
             -DCMAKE_INSTALL_PREFIX=${GITHUB_WORKSPACE}/install \
             -DHIPPER_TEST_PLATFORM=CUDA \
             -DCMAKE_CUDA_ARCHITECTURES=80
@@ -84,6 +85,7 @@ jobs:
         run: |
           cmake -S . -B build \
             -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_COMPILE_WARNING_AS_ERROR=ON \
             -DCMAKE_INSTALL_PREFIX=${GITHUB_WORKSPACE}/install \
             -DHIPPER_TEST_PLATFORM=HIP
       - name: Build

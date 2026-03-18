@@ -67,7 +67,6 @@ jobs:
           fi
       - name: Install ROCm
         run: |
-
           wget ${{ steps.set-rocm-repo.outputs.rocmdeb }} -O amdgpu-install.deb
           sudo apt-get install --yes ./amdgpu-install.deb
           sudo apt-get update

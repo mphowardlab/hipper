@@ -22,7 +22,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        cuda: ["12.8.1"]
+        cuda:
+          ["12.4.1", "12.5.1", "12.6.3", "12.8.1", "12.9.1", "13.0.2", "13.1.1"]
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
@@ -35,7 +36,7 @@ jobs:
           cmake -S . -B build \
             -DCMAKE_BUILD_TYPE=Release \
             -DCMAKE_INSTALL_PREFIX=${GITHUB_WORKSPACE}/install \
-            -DHIPPER_TEST_PLATFORM=nvidia \
+            -DHIPPER_TEST_PLATFORM=CUDA \
             -DCMAKE_CUDA_ARCHITECTURES=80
       - name: Build
         run: |
@@ -46,19 +47,36 @@ jobs:
 
   build-hip:
     name: ROCm ${{ matrix.rocm }}
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-${{ matrix.ubuntu }}
     strategy:
       fail-fast: false
       matrix:
-        rocm: ["7.2"]
+        include:
+          - rocm: "6.0.3"
+            ubuntu: "22.04"
+          - rocm: "6.1.4"
+            ubuntu: "22.04"
+          - rocm: "6.2.4"
+            ubuntu: "24.04"
+          - rocm: "6.3.4"
+            ubuntu: "24.04"
+          - rocm: "6.4.4"
+            ubuntu: "24.04"
+          - rocm: "7.0.3"
+            ubuntu: "24.04"
+          - rocm: "7.1.1"
+            ubuntu: "24.04"
+          - rocm: "7.2.0"
+            ubuntu: "24.04"
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
       - name: Find ROCm repository
         id: set-rocm-repo
         run: |
-          rocmdeb=$(grep "^${{ matrix.rocm }} " ./.github/workflows/radeon-repo.txt | awk '{print $2}')
-          if [[ -n $rocmdeb ]]; then
+          rocmfile=./.github/rocm/${{ matrix.rocm }}.txt
+          if [[ -f $rocmfile ]]; then
+            rocmdeb=$(cat $rocmfile)
             echo "rocmdeb=$rocmdeb" >> $GITHUB_OUTPUT
           else
             echo "Unknown ROCm version" && exit 1
@@ -84,7 +102,7 @@ jobs:
           cmake -S . -B build \
             -DCMAKE_BUILD_TYPE=Release \
             -DCMAKE_INSTALL_PREFIX=${GITHUB_WORKSPACE}/install \
-            -DHIPPER_TEST_PLATFORM=amd
+            -DHIPPER_TEST_PLATFORM=HIP
       - name: Build
         run: |
           cmake --build build

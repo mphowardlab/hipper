@@ -3,12 +3,12 @@
 # This file is released under the Modified BSD License.
 
 # enable the language used for testing
-if(HIPPER_TEST_PLATFORM STREQUAL "nvidia")
+if(HIPPER_TEST_PLATFORM STREQUAL "CUDA")
     enable_language(CUDA)
-elseif(HIPPER_TEST_PLATFORM STREQUAL "amd")
+elseif(HIPPER_TEST_PLATFORM STREQUAL "HIP")
     enable_language(HIP)
 else()
-    message(FATAL_ERROR "HIPPER_TEST_PLATFORM value ${HIPPER_TEST_PLATFORM} not recognized, must be nvidia or amd")
+    message(FATAL_ERROR "HIPPER_TEST_PLATFORM value ${HIPPER_TEST_PLATFORM} not recognized, must be CUDA or HIP")
 endif()
 
 # the list of all source files
@@ -39,11 +39,7 @@ endif()
 
 add_executable(test_hipper ${HIPPER_TEST_FILES})
 target_link_libraries(test_hipper PRIVATE hipper::hipper Catch2::Catch2)
-if(HIPPER_TEST_PLATFORM STREQUAL "nvidia")
-    target_compile_definitions(test_hipper PRIVATE HIPPER_CUDA)
-elseif(HIPPER_TEST_PLATFORM STREQUAL "amd")
-    target_compile_definitions(test_hipper PRIVATE HIPPER_HIP)
-endif()
+target_compile_definitions(test_hipper PRIVATE HIPPER_${HIPPER_TEST_PLATFORM})
 
 foreach(label ${HIPPER_TEST_LABELS})
     add_test(NAME hipper-${label} COMMAND test_hipper "[${label}]")

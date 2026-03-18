@@ -16,7 +16,7 @@ if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
     set(HIPPER_MASTER_PROJECT ON)
 endif()
 option(HIPPER_INSTALL "Install hipper files?" ${HIPPER_MASTER_PROJECT})
-set(HIPPER_TEST_PLATFORM "" CACHE STRING "Platform for hipper tests [nvidia, amd]")
+set(HIPPER_TEST_PLATFORM "" CACHE STRING "Platform for hipper tests [CUDA, HIP]")
 
 # header-only targets
 include(GNUInstallDirs)
